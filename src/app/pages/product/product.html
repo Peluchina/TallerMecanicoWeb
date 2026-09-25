@@ -1,0 +1,286 @@
+<div class="container">
+  
+  <!-- FORMULARIO -->
+  <div class="card">
+
+    <h2>
+      {{ editingProduct ? 'Editar Producto' : 'Registrar Producto' }}
+    </h2>
+
+    <form>
+
+      <div class="form-grid">
+
+        <!-- NOMBRE -->
+        <div class="form-group">
+          <label for="productName">Nombre</label>
+
+          <input
+            id="productName"
+            type="text"
+            name="productName"
+            [(ngModel)]="newProduct.productName"
+            placeholder="Ingrese el nombre">
+        </div>
+
+
+        <!-- PROVEEDOR -->
+        <div class="form-group">
+
+          <label for="supplier">Proveedor</label>
+
+          <select
+            id="supplier"
+            name="supplierId"
+            [(ngModel)]="newProduct.supplierId">
+
+            <option [ngValue]="0">
+              Seleccione un proveedor
+            </option>
+
+            @for (supplier of suppliers; track supplier.supplierId) {
+
+              <option [ngValue]="supplier.supplierId">
+                {{ supplier.legalName }}
+              </option>
+
+            }
+
+          </select>
+
+        </div>
+
+
+        <!-- MARCA -->
+        <div class="form-group">
+
+          <label for="brand">Marca</label>
+
+          <input
+            id="brand"
+            type="text"
+            name="brand"
+            [(ngModel)]="newProduct.brand"
+            placeholder="Ingrese la marca">
+
+        </div>
+
+
+        <!-- PRECIO -->
+        <div class="form-group">
+
+          <label for="price">Precio</label>
+
+          <input
+            id="price"
+            type="number"
+            name="price"
+            [(ngModel)]="newProduct.price"
+            placeholder="Ingrese el precio"
+            min="0"
+            step="0.01">
+
+        </div>
+
+
+        <!-- STOCK -->
+        <div class="form-group full-width">
+
+          <label for="stock">Stock</label>
+
+          <input
+            id="stock"
+            type="number"
+            name="stock"
+            [(ngModel)]="newProduct.stock"
+            placeholder="Ingrese la cantidad"
+            min="0">
+
+        </div>
+
+      </div>
+
+
+      <!-- BOTONES -->
+      <div class="form-actions">
+
+        @if (!editingProduct) {
+
+          <button
+            type="button"
+            class="btn-primary"
+            (click)="createProduct()">
+
+            Guardar
+
+          </button>
+
+        } @else {
+
+          <button
+            type="button"
+            class="btn-primary"
+            (click)="updateProduct()">
+
+            Actualizar
+
+          </button>
+
+          <button
+            type="button"
+            class="btn-secondary"
+            (click)="cancelEdit()">
+
+            Cancelar
+
+          </button>
+
+        }
+
+      </div>
+
+    </form>
+
+  </div>
+
+  <div class="card">
+
+    <h2>Lista de Productos</h2>
+
+    <div class="filter-container">
+
+      <label for="statusFilter">
+        Estado:
+      </label>
+    
+      <select
+        id="statusFilter"
+        [(ngModel)]="filterStatus">
+    
+        <option value="TODOS">
+          Todos
+        </option>
+    
+        <option value="ACTIVOS">
+          Activos
+        </option>
+    
+        <option value="INACTIVOS">
+          Inactivos
+        </option>
+    
+      </select>
+    
+    </div>
+    <br>
+    <div class="table-container">
+
+      <table class="border-separate border border-gray-400 ...">
+
+        <thead>
+
+          <tr class="text-left md:text-center">
+            <th class="border border-gray-300" >ID</th>
+            <th class="border border-gray-300" >Producto</th>
+            <th class="border border-gray-300" >Proveedor</th>
+            <th class="border border-gray-300" >Marca</th>
+            <th class="border border-gray-300" >Precio</th>
+            <th class="border border-gray-300" >Stock</th>
+            <th class="border border-gray-300" >Estado</th>
+            <th class="border border-gray-300" >Acciones</th>
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          @for (product of filteredProducts; track product.productId) {
+
+            <tr>
+
+              <td class="border border-gray-300">{{ product.productId }}</td>
+
+              <td class="border border-gray-300">{{ product.productName }}</td>
+
+              <td class="border border-gray-300" >{{getSupplierName( product.supplierId)}}</td>
+
+              <td class="border border-gray-300" >{{ product.brand }}</td>
+
+              <td class="border border-gray-300" >{{ product.price }}</td>
+
+              <td class="border border-gray-300" >{{ product.stock }}</td>
+
+              <td class="border border-gray-300" >
+
+                @if (product.productStatus === 0) {
+        
+                  <span
+                    class="status active"
+                    title="Activo">
+                    <i class="fa-solid fa-circle"></i>
+                  </span>
+        
+                } @else {
+        
+                  <span
+                    class="status inactive"
+                    title="Inactivo">
+                    <i class="fa-solid fa-circle"></i>
+                  </span>
+        
+                }
+        
+              </td>
+
+              <td class="actions" class="border border-gray-300">
+
+                <button
+                  type="button"
+                  class="btn-icon"
+                  title="Editar"
+                  (click)="editProduct(product)">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+              
+              
+                @if (product.productStatus === 0) {
+              
+                  <button
+                    type="button"
+                    class="btn-icon"
+                    title="Desactivar"
+                    (click)="updateProductStatus(product.productId, 1)">
+                    <i class="fa-solid fa-ban"></i>
+                  </button>
+              
+                }
+              
+              
+                @if (product.productStatus === 1) {
+              
+                  <button
+                    type="button"
+                    class="btn-icon"
+                    title="Activar"
+                    (click)="updateProductStatus(product.productId, 0)">
+                    <i class="fa-solid fa-check"></i>
+                  </button>
+              
+                }
+              
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>

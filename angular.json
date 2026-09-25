@@ -25,6 +25,8 @@
               }
             ],
             "styles": [
+              "src/material-theme.scss",
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
               "src/styles.css"
             ]
           },
@@ -56,10 +58,12 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "TallerMecanicoFrontend:build:production"
+              "buildTarget": "TallerMecanicoFrontend:build:production",
+              "proxyConfig": "proxy.conf.json"
             },
             "development": {
-              "buildTarget": "TallerMecanicoFrontend:build:development"
+              "buildTarget": "TallerMecanicoFrontend:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

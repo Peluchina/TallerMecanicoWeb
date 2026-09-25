@@ -1,0 +1,122 @@
+
+<div class="container">
+
+    <!-- FORMULARIO -->
+    <div class="card">
+  
+      <h2>Registrar Cliente</h2>
+  
+      <form>
+  
+        <div class="form-grid">
+  
+          <div class="form-group">
+            <label for="firstName">Nombre</label>
+            <input
+              id="firstName"
+              type="text"
+              name="firstName"
+              [(ngModel)]="newCustomer.firstName"
+              placeholder="Ingrese el nombre">
+          </div>
+  
+          <div class="form-group">
+            <label for="lastName">Apellido</label>
+            <input
+              id="lastName"
+              type="text"
+              name="lastName"
+              [(ngModel)]="newCustomer.lastName"
+              placeholder="Ingrese el apellido">
+          </div>
+  
+          <div class="form-group">
+            <label for="dni">DNI</label>
+            <input
+              id="dni"
+              type="text"
+              name="dni"
+              [(ngModel)]="newCustomer.dni"
+              placeholder="Ingrese el DNI">
+          </div>
+  
+          <div class="form-group">
+            <label for="phone">Teléfono</label>
+            <input
+              id="phone"
+              type="text"
+              name="phone"
+              [(ngModel)]="newCustomer.phone"
+              placeholder="Ingrese el teléfono">
+          </div>
+  
+          <div class="form-group full-width">
+            <label for="address">Dirección</label>
+            <input
+              id="address"
+              type="text"
+              name="address"
+              [(ngModel)]="newCustomer.address"
+              placeholder="Ingrese la dirección">
+          </div>
+  
+        </div>
+  
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn-primary"
+            (click)="createCustomer()">
+            Guardar
+          </button>
+        </div>
+  
+      </form>
+  
+    </div>
+  
+  
+    <!-- TABLA -->
+    <div class="card">
+  
+      <h2>Lista de Clientes</h2>
+  
+      <div class="table-container">
+  
+        <table>
+  
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>DNI</th>
+              <th>Dirección</th>
+              <th>Teléfono</th>
+            </tr>
+          </thead>
+  
+          <tbody>
+  
+            @for (customer of customers; track customer.customerId) {
+  
+              <tr>
+                <td>{{ customer.customerId }}</td>
+                <td>{{ customer.firstName }}</td>
+                <td>{{ customer.lastName }}</td>
+                <td>{{ customer.dni }}</td>
+                <td>{{ customer.address }}</td>
+                <td>{{ customer.phone }}</td>
+              </tr>
+  
+            }
+  
+          </tbody>
+  
+        </table>
+  
+      </div>
+  
+    </div>
+  
+  </div>

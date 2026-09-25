@@ -1,0 +1,168 @@
+<div class="container">
+
+    <!-- FORMULARIO -->
+    <div class="card">
+  
+      <h2>Registrar Servicio al cliente</h2>
+  
+      <form>
+  
+        <div class="form-grid">
+  
+            <div class="form-group">
+                <label for="customerSearch">Cliente</label>
+                <input
+                  id="customerSearch"
+                  type="text"
+                  name="customerSearch"
+                  [(ngModel)]="customerSearch"
+                  (ngModelChange)="onCustomerSearchChanged()"
+                  placeholder="Busca por nombre, apellido o DNI"
+                  autocomplete="off">
+
+                @if (showCustomerSuggestions) {
+                  <div class="search-results">
+                    @for (customer of filteredCustomers; track customer.customerId) {
+                      <button type="button" class="search-result" (click)="selectCustomer(customer)">
+                        {{ customer.firstName }} {{ customer.lastName }} — DNI: {{ customer.dni }}
+                      </button>
+                    } @empty {
+                      <p class="no-results">No se encontraron clientes.</p>
+                    }
+                  </div>
+                }
+
+                @if (newServiceSchedule.customerId !== null) {
+                  <small class="selected-result">Cliente: {{ selectedCustomerLabel }}</small>
+                }
+            </div>
+  
+          <div class="form-group">
+            <label for="employeeSearch">Empleado</label>
+            <input
+              id="employeeSearch"
+              type="text"
+              name="employeeSearch"
+              [(ngModel)]="employeeSearch"
+              (ngModelChange)="onEmployeeSearchChanged()"
+              placeholder="Busca por nombre, apellido o DNI"
+              autocomplete="off">
+
+            @if (showEmployeeSuggestions) {
+              <div class="search-results">
+                @for (employee of filteredEmployees; track employee.employeeId) {
+                  <button type="button" class="search-result" (click)="selectEmployee(employee)">
+                    {{ employee.firstName }} {{ employee.lastName }} — DNI: {{ employee.dni }}
+                  </button>
+                } @empty {
+                  <p class="no-results">No se encontraron empleados.</p>
+                }
+              </div>
+            }
+
+            @if (newServiceSchedule.employeeId !== null) {
+              <small class="selected-result">Empleado: {{ selectedEmployeeLabel }}</small>
+            }
+          </div>
+  
+          <div class="form-group">
+            <label for="serviceSearch">Servicio</label>
+            <input
+              id="serviceSearch"
+              type="text"
+              name="serviceSearch"
+              [(ngModel)]="serviceSearch"
+              (ngModelChange)="onServiceSearchChanged()"
+              placeholder="Busca por nombre, descripción o ID"
+              autocomplete="off">
+
+            @if (showServiceSuggestions) {
+              <div class="search-results">
+                @for (service of filteredServices; track service.serviceId) {
+                  <button type="button" class="search-result" (click)="selectService(service)">
+                    {{ service.serviceName }} — S/ {{ service.price }}
+                  </button>
+                } @empty {
+                  <p class="no-results">No se encontraron servicios.</p>
+                }
+              </div>
+            }
+
+            @if (newServiceSchedule.serviceId !== null) {
+              <small class="selected-result">Servicio: {{ selectedServiceLabel }}</small>
+            }
+          </div>
+  
+          <div class="form-group">
+            <label for="scheduledDate">Fecha programada</label>
+            <input
+              id="scheduledDate"
+              type="datetime-local"
+              name="scheduledDate"
+              [(ngModel)]="newServiceSchedule.scheduledDate"
+              placeholder="Ingrese la fecha">
+          </div>
+        </div>
+
+        @if (formError) {
+          <p class="form-error">{{ formError }}</p>
+        }
+  
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn-primary"
+            (click)="createServiceSchedule()">
+            Guardar
+          </button>
+        </div>
+  
+      </form>
+  
+    </div>
+  
+  
+    <!-- TABLA -->
+    <div class="card">
+  
+      <h2>Lista de Programaciones</h2>
+  
+      <div class="table-container">
+  
+        <table>
+  
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Cliente</th>
+              <th>Empleado</th>
+              <th>Servicio</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+  
+          <tbody>
+  
+            @for (serviceSchedule of serviceSchedules; track serviceSchedule.serviceScheduleId) {
+  
+              <tr>
+                <td>{{ serviceSchedule.serviceScheduleId }}</td>
+                <td>{{ serviceSchedule.customerId }}</td>
+                <td>{{ serviceSchedule.employeeId }}</td>
+                <td>{{ serviceSchedule.serviceId }}</td>
+                <td>{{ serviceSchedule.scheduledDate}}</td>
+                <td>{{ serviceSchedule.serviceScheduleStatus }}</td>
+              </tr>
+  
+            }
+  
+          </tbody>
+  
+        </table>
+  
+      </div>
+  
+    </div>
+  
+  </div>

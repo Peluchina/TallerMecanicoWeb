@@ -1,0 +1,85 @@
+<header>
+
+  <header class="header">
+
+    <h1>Mi Sistema</h1>
+  
+    <nav class="navbar">
+  
+      <a routerLink="/customer">
+        Customer
+      </a>
+  
+      <a routerLink="/supplier">
+        Supplier
+      </a>
+  
+      <!-- Menú Programación -->
+      <div class="dropdown">
+  
+        <button
+          type="button"
+          class="dropdown-button"
+          (click)="toggleMenu('programacion')">
+  
+          Programación ▾
+  
+        </button>
+  
+        @if (activeMenu === 'programacion') {
+  
+          <div class="dropdown-menu">
+  
+            <a routerLink="/service-schedule"
+               (click)="closeMenu()">
+              Programación de servicios
+            </a>
+  
+            <a routerLink="/product-schedule"
+               (click)="closeMenu()">
+              Productos-programación
+            </a>
+  
+          </div>
+  
+        }
+  
+      </div>
+  
+  
+      <!-- Menú Productos -->
+      <div class="dropdown">
+  
+        <button
+          type="button"
+          class="dropdown-button"
+          (click)="toggleMenu('productos')">
+  
+          Productos ▾
+  
+        </button>
+  
+        @if (activeMenu === 'productos') {
+  
+          <div class="dropdown-menu">
+  
+            <a routerLink="/product"
+               (click)="closeMenu()">
+              Productos
+            </a>
+  
+            <a routerLink="/supplier"
+               (click)="closeMenu()">
+              Proveedores
+            </a>
+  
+          </div>
+  
+        }
+  
+      </div>
+  
+    </nav>
+  
+  </header>
+  

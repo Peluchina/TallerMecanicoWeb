@@ -1,0 +1,112 @@
+<div class="container">
+
+    <!-- FORMULARIO -->
+    <div class="card">
+  
+      <h2>Registrar Servicios</h2>
+  
+      <form>
+  
+        <div class="form-grid">
+  
+          <div class="form-group">
+            <label for="serviceName">Nombre</label>
+            <input
+              id="serviceName"
+              type="text"
+              name="serviceName"
+              [(ngModel)]="newService.serviceName"
+              placeholder="Ingrese el nombre">
+          </div>
+  
+          <div class="form-group">
+            <label for="description">Apellido</label>
+            <input
+              id="description"
+              type="text"
+              name="description"
+              [(ngModel)]="newService.description"
+              placeholder="Ingrese el apellido">
+          </div>
+  
+          <div class="form-group">
+            <label for="price">Precio</label>
+            <input
+              id="price"
+              type="text"
+              name="price"
+              [(ngModel)]="newService.price"
+              placeholder="Ingrese el precio">
+          </div>
+  
+          <div class="form-group">
+            <label for="estimatedDuration">Tiempo estimado</label>
+            <input
+              id="estimatedDuration"
+              type="text"
+              name="estimatedDuration"
+              [(ngModel)]="newService.estimatedDuration"
+              placeholder="Ingrese el tiempo estimado">
+          </div>
+  
+          
+        </div>
+  
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn-primary"
+            (click)="createService()">
+            Guardar
+          </button>
+        </div>
+  
+      </form>
+  
+    </div>
+  
+  
+    <!-- TABLA -->
+    <div class="card">
+  
+      <h2>Lista de Servicios</h2>
+  
+      <div class="table-container">
+  
+        <table>
+  
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Precio</th>
+              <th>Tiempo estimado</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+  
+          <tbody>
+  
+            @for (service of service; track service.serviceId) {
+  
+              <tr>
+                <td>{{ service.serviceId }}</td>
+                <td>{{ service.serviceName }}</td>
+                <td>{{ service.description }}</td>
+                <td>{{ service.price }}</td>
+                <td>{{ service.estimatedDuration }}</td>
+                <td>{{ service.serviceStatus }}</td>
+              </tr>
+  
+            }
+  
+          </tbody>
+  
+        </table>
+  
+      </div>
+  
+    </div>
+  
+  </div>
