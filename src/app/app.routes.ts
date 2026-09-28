@@ -5,6 +5,7 @@ import { ServiceScheduleComponent } from './pages/service-schedule/service-sched
 import { ProductScheduleComponent } from './pages/product-schedule/product-schedule';
 import { HomeComponent } from './pages/home/home';
 import { Products } from './pages/product/product';
+import { Services } from './pages/service/service';
 
 export const routes: Routes = [
   {
@@ -31,6 +32,10 @@ export const routes: Routes = [
   {
     path: 'product',
     component: Products,
+  },
+  {
+    path: 'service',
+    component: Services,
   },
   {
     path: '**',
