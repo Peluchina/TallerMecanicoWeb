@@ -15,13 +15,13 @@ export class Employees implements OnInit {
   newEmployee={
     firstName: '',
     lastName: '',
-    dni: '',
+    dni: 0,
     address: '',
-    phone: '',
+    phone: 0,
     role: '',
     emailAddress: '',
     password:'',
-    employeeStatus: ''
+    employeeStatus: 0
   };
 
   constructor(private employeService: employeeService){}
@@ -50,13 +50,13 @@ export class Employees implements OnInit {
         this.newEmployee={
           firstName: '',
           lastName: '',
-          dni: '',
+          dni: 0,
           address: '',
-          phone: '',
+          phone: 0,
           role: '',
           emailAddress: '',
           password:'',
-          employeeStatus: ''
+          employeeStatus: 0
         };
       },
       error:(error)=>{

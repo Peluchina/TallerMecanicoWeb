@@ -177,7 +177,7 @@ export class ServiceScheduleComponent implements OnInit {
     this.formError = '';
   }
 
-  createServiceSchedule():void{
+  createServiceSchedule(): void {
     if (
       this.newServiceSchedule.customerId === null ||
       this.newServiceSchedule.employeeId === null ||
@@ -187,9 +187,19 @@ export class ServiceScheduleComponent implements OnInit {
       return;
     }
 
-    this.serviceScheduleService.create(this.newServiceSchedule).subscribe({
-      next:(response)=>{
-        console.log('Programación creada:',response);
+    const rawDate = this.newServiceSchedule.scheduledDate;
+    const formattedDate = typeof rawDate === 'string' && rawDate.length === 16
+      ? `${rawDate}:00`
+      : rawDate;
+
+    const payload = {
+      ...this.newServiceSchedule,
+      scheduledDate: formattedDate,
+    };
+
+    this.serviceScheduleService.create(payload).subscribe({
+      next: (response) => {
+        console.log('Programación creada:', response);
         this.loadServiceSchedules();
         this.newServiceSchedule = this.createEmptyServiceSchedule();
         this.customerSearch = '';
@@ -197,10 +207,10 @@ export class ServiceScheduleComponent implements OnInit {
         this.serviceSearch = '';
         this.formError = '';
       },
-      error:(error)=>{
-        console.error('Error al crear la programación',error);
+      error: (error) => {
+        console.error('Error al crear la programación', error);
       }
-    })
+    });
   }
 
   private matches(query: string, values: Array<string | number>): boolean {

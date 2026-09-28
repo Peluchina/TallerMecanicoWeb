@@ -3,7 +3,10 @@
     <!-- FORMULARIO -->
     <div class="card">
   
-      <h2>Registrar Servicios</h2>
+      <h2>
+        {{ editingService ? 'Editar Servicio' : 'Registrar Servicio' }}
+      </h2>
+  
   
       <form>
   
@@ -20,20 +23,20 @@
           </div>
   
           <div class="form-group">
-            <label for="description">Apellido</label>
+            <label for="description">Descripción</label>
             <input
               id="description"
               type="text"
               name="description"
               [(ngModel)]="newService.description"
-              placeholder="Ingrese el apellido">
+              placeholder="Ingrese la descripción">
           </div>
   
           <div class="form-group">
             <label for="price">Precio</label>
             <input
               id="price"
-              type="text"
+              type="number"
               name="price"
               [(ngModel)]="newService.price"
               placeholder="Ingrese el precio">
@@ -43,7 +46,7 @@
             <label for="estimatedDuration">Tiempo estimado</label>
             <input
               id="estimatedDuration"
-              type="text"
+              type="time"
               name="estimatedDuration"
               [(ngModel)]="newService.estimatedDuration"
               placeholder="Ingrese el tiempo estimado">
@@ -53,12 +56,40 @@
         </div>
   
         <div class="form-actions">
-          <button
-            type="button"
-            class="btn-primary"
-            (click)="createService()">
-            Guardar
-          </button>
+
+          @if (!editingService) {
+  
+            <button
+              type="button"
+              class="btn-primary"
+              (click)="createService()">
+  
+              Guardar
+  
+            </button>
+  
+          } @else {
+  
+            <button
+              type="button"
+              class="btn-primary"
+              (click)="updateService()">
+  
+              Actualizar
+  
+            </button>
+  
+            <button
+              type="button"
+              class="btn-secondary"
+              (click)="cancelEdit()">
+  
+              Cancelar
+  
+            </button>
+  
+          }
+  
         </div>
   
       </form>
@@ -71,32 +102,117 @@
   
       <h2>Lista de Servicios</h2>
   
-      <div class="table-container">
+      <div class="filter-container">
+
+        <label for="statusFilter">
+          Estado:
+        </label>
+      
+        <select
+          id="statusFilter"
+          [(ngModel)]="filterStatus">
+      
+          <option value="TODOS">
+            Todos
+          </option>
+      
+          <option value="ACTIVOS">
+            Activos
+          </option>
+      
+          <option value="INACTIVOS">
+            Inactivos
+          </option>
+      
+        </select>
+      
+      </div>
+      <br>
   
-        <table>
+      <div class="table-container">
+        <table class="border-separate border border-gray-400 ...">
   
           <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Descripción</th>
-              <th>Precio</th>
-              <th>Tiempo estimado</th>
-              <th>Estado</th>
+            <tr class="text-left md:text-center">
+              <th class="border border-gray-300">ID</th>
+              <th class="border border-gray-300">Nombre</th>
+              <th class="border border-gray-300" >Descripción</th>
+              <th class="border border-gray-300" >Precio</th>
+              <th class="border border-gray-300" >Tiempo estimado</th>
+              <th class="border border-gray-300" >Estado</th>
+              <th class="border border-gray-300" >Acciones</th>
             </tr>
           </thead>
   
           <tbody>
   
-            @for (service of service; track service.serviceId) {
+            @for (service of filteredServices; track service.serviceId) {
   
               <tr>
-                <td>{{ service.serviceId }}</td>
-                <td>{{ service.serviceName }}</td>
-                <td>{{ service.description }}</td>
-                <td>{{ service.price }}</td>
-                <td>{{ service.estimatedDuration }}</td>
-                <td>{{ service.serviceStatus }}</td>
+                <td class="border border-gray-300">{{ service.serviceId }}</td>
+                <td class="border border-gray-300">{{ service.serviceName }}</td>
+                <td class="border border-gray-300">{{ service.description }}</td>
+                <td class="border border-gray-300">{{ service.price }}</td>
+                <td class="border border-gray-300">{{ service.estimatedDuration }}</td>
+                <td class="border border-gray-300" >
+                @if (service.serviceStatus === 0) {
+        
+                  <span
+                    class="status active"
+                    title="Activo">
+                    <i class="fa-solid fa-circle"></i>
+                  </span>
+        
+                } @else {
+        
+                  <span
+                    class="status inactive"
+                    title="Inactivo">
+                    <i class="fa-solid fa-circle"></i>
+                  </span>
+        
+                }
+        
+              </td>
+
+              <td class="actions" class="border border-gray-300">
+
+                <button
+                  type="button"
+                  class="btn-icon"
+                  title="Editar"
+                  (click)="editService(service)">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+              
+              
+                @if (service.serviceStatus === 0) {
+              
+                  <button
+                    type="button"
+                    class="btn-icon"
+                    title="Desactivar"
+                    (click)="updateServiceStatus(service.serviceId, 1)">
+                    <i class="fa-solid fa-ban"></i>
+                  </button>
+              
+                }
+              
+              
+                @if (service.serviceStatus === 1) {
+              
+                  <button
+                    type="button"
+                    class="btn-icon"
+                    title="Activar"
+                    (click)="updateServiceStatus(service.serviceId, 0)">
+                    <i class="fa-solid fa-check"></i>
+                  </button>
+              
+                }
+              
+              </td>
+
               </tr>
   
             }
