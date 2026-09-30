@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SupplierService } from '../../services/supplier.service';
 import { Supplier } from '../../models/supplier.model';
-
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-supplier',
@@ -11,48 +11,300 @@ import { Supplier } from '../../models/supplier.model';
   styleUrl: './supplier.css',
 })
 export class SupplierComponent implements OnInit {
+  suppliers: Supplier[] = [];
 
-    suppliers: Supplier[] = [];
-    newSupplier={
+  editingSupplier: Supplier | null = null;
+  filterStatus: 'TODOS' | 'ACTIVOS' | 'INACTIVOS' = 'TODOS';
+
+  newSupplier = {
+    ruc: '',
+    legalName: '',
+    address: '',
+    phone: '',
+    supplierStatus: 0,
+  };
+
+  constructor(
+    private supplierService: SupplierService,
+    private cdr: ChangeDetectorRef,
+  ) {}
+
+  ngOnInit(): void {
+    this.loadSupplier();
+  }
+
+  loadSupplier(): void {
+    this.supplierService.getAll().subscribe({
+      next: (data) => {
+        this.suppliers = data;
+      },
+      error: (error) => {
+        console.error('Error al obtener proveedores:', error);
+      },
+    });
+  }
+
+  createSupplier(): void {
+    Swal.fire({
+      title: '¿Registrar proveedor?',
+      text: 'Se creará un nuevo proveedor.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, registrar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      Swal.fire({
+        title: 'Registrando...',
+        text: 'Por favor espera.',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      const payload = {
+        ruc: this.newSupplier.ruc,
+        legalName: this.newSupplier.legalName,
+        address: this.newSupplier.address,
+        phone: this.newSupplier.phone,
+      };
+
+      console.log('Enviando proveedor:', payload);
+
+      this.supplierService.create(payload).subscribe({
+        next: (respose) => {
+          console.log('Proveedor creado', respose);
+          this.supplierService.getAll().subscribe({
+            next: (data) => {
+              this.suppliers = data;
+              this.cdr.detectChanges();
+              this.resetForm();
+
+              Swal.fire({
+                title: '¡Registrado!',
+                text: 'El proveedor se creó correctamente.',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false,
+              });
+            },
+            error: (err) => {
+              console.error('Error al actualizar la lista:', err);
+              this.resetForm();
+            },
+          });
+        },
+        error: (error) => {
+          console.error('Error al crear proveedor:', error);
+          Swal.fire({
+            title: 'Error',
+            text: 'No se pudo registrar el proveedor.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+          });
+        },
+      });
+    });
+  }
+
+  editSupplier(supplier: Supplier): void {
+    this.editingSupplier = {
+      ...supplier,
+    };
+
+    this.newSupplier={
+      ruc: supplier.ruc || '',
+      legalName: supplier.legalName || '',
+      address: supplier.address || '',
+      phone: supplier.phone || '',
+      supplierStatus: supplier.supplierStatus ?? 0,
+    }
+
+  }
+  resetForm(): void {
+    this.editingSupplier = null;
+
+    this.newSupplier = {
       ruc: '',
       legalName: '',
       address: '',
-      phone: ''
+      phone: '',
+      supplierStatus: 0,
     };
+  }
 
-    constructor(private supplierService: SupplierService){}
-    ngOnInit(): void {
-        this.loadSupplier();
-    }
-
-    loadSupplier(): void{
-      this.supplierService.getAll().subscribe({
-        next:(data)=>{
-          this.suppliers = data;
-        },
-        error: (error) => {
-          console.error('Error al obtener proveedores:', error);
+  updateSupplier(): void {
+      if (!this.editingSupplier) {
+        return;
+      }
+      Swal.fire({
+        title: '¿Actualizar proveedor?',
+        text: 'Los cambios serán guardados.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, actualizar',
+        cancelButtonText: 'Cancelar',
+      }).then((result) => {
+        if (!result.isConfirmed) {
+          return;
         }
+  
+        Swal.fire({
+          title: 'Actualizando...',
+          text: 'Por favor espera.',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+        const supplierId = this.editingSupplier!.supplierId;
+  
+        const payload = {
+          ruc: this.newSupplier.ruc,
+          legalName: this.newSupplier.legalName,
+          address: this.newSupplier.address,
+          phone:this.newSupplier.phone,
+          supplierStatus: Number(this.newSupplier.supplierStatus),
+        };
+  
+        this.supplierService.update(supplierId, payload).subscribe({
+          next: () => {
+            const index = this.suppliers.findIndex((s) => s.supplierId === supplierId);
+  
+            if (index !== -1) {
+              this.suppliers[index] = {
+                ...this.suppliers[index],
+                ruc: payload.ruc,
+                legalName: payload.legalName,
+                address: payload.address,
+                phone: payload.phone,
+                supplierStatus: payload.supplierStatus,
+              };
+  
+              this.suppliers = [...this.suppliers];
+              this.cdr.detectChanges();
+            }
+  
+            this.resetForm();
+            this.cdr.detectChanges();
+  
+            Swal.fire({
+              title: '¡Actualizado!',
+              text: 'El proveedor se actualizó correctamente.',
+              icon: 'success',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+          },
+          error: (error) => {
+            console.error('Error al actualizar', error);
+  
+            Swal.fire({
+              title: 'Error',
+              text: 'No se pudo actualizar el proveedor.',
+              icon: 'error',
+              confirmButtonText: 'Aceptar',
+            });
+          },
+        });
       });
     }
 
-    createSupplier():void{
-      this.supplierService.create(this.newSupplier).subscribe({
-        
-        next:(respose)=>{
-          console.log('Proveedor creado',respose);
-          this.loadSupplier();
-          this.newSupplier={
-            ruc:'',
-            legalName:'',
-            address: '',
-            phone: ''
-          };
-        },
-        error:(error)=>{
-          console.error('Error al crear cliente', error)
+    cancelEdit(): void {
+        this.resetForm();
+      }
+    
+      get activeSupplier(): Supplier[] {
+        return this.suppliers.filter((supplier) => supplier.supplierStatus === 0);
+      }
+
+        updateSupplierStatus(supplierId: number, status: number): void {
+          const action = status === 1 ? 'desactivar' : 'activar';
+      
+          Swal.fire({
+            title: `¿Deseas ${action} este proveedor?`,
+            text: 'El estado del proveedor será actualizado.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, continuar',
+            cancelButtonText: 'Cancelar',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              Swal.fire({
+                title: 'Actualizando...',
+                text: 'Por favor espera.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                  Swal.showLoading();
+                },
+              });
+      
+              this.supplierService.updateStatus(supplierId, status).subscribe({
+                next: () => {
+                  const index = this.suppliers.findIndex((s) => s.supplierId === supplierId);
+      
+                  if (index !== -1) {
+                    this.suppliers[index] = {
+                      ...this.suppliers[index],
+                      supplierStatus: status,
+                    };
+      
+                    this.suppliers = [...this.suppliers];
+                    this.cdr.detectChanges();
+                  }
+      
+                  Swal.fire({
+                    title: '¡Actualizado!',
+                    text: 'El estado se actualizó correctamente.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                  });
+                },
+      
+                error: (error) => {
+                  console.error('Error al actualizar estado:', error);
+      
+                  Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudo actualizar el estado.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar',
+                  });
+                },
+              });
+            }
+          });
         }
+      
+        get filteredSupplier(): Supplier[] {
+          if (this.filterStatus === 'ACTIVOS') {
+            return this.suppliers.filter((supplier) => supplier.supplierStatus === 0);
+          }
+      
+          if (this.filterStatus === 'INACTIVOS') {
+            return this.suppliers.filter((supplier) => supplier.supplierStatus === 1);
+          }
+      
+          return this.suppliers;
+        }
+
+        onlyNumbers(event: KeyboardEvent): void {
+          const key = event.key;
         
-      });
-    }
+          if (
+            !/[0-9]/.test(key) &&
+            key !== 'Backspace' &&
+            key !== 'Delete' &&
+            key !== 'ArrowLeft' &&
+            key !== 'ArrowRight' &&
+            key !== 'Tab'
+          ) {
+            event.preventDefault();
+          }
+        }
 }
