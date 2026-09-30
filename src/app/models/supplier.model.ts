@@ -4,5 +4,6 @@ export interface Supplier{
     legalName: string;
     address: string;
     phone: string;
-    supplierStatus: string;
+    supplierStatus: number;
   }
+  export type SupplierRequest = Omit<Supplier, 'supplierId' | 'supplierStatus'>;

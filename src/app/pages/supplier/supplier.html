@@ -1,107 +1,175 @@
 <div class="container">
+  <!-- FORMULARIO -->
+  <div class="card">
+    <h2>
+      {{ editingSupplier ? 'Editar proveedor' : 'Registrar proveedor' }}
+    </h2>
 
-    <!-- FORMULARIO -->
-    <div class="card">
-  
-      <h2>Registrar Proveedor</h2>
-  
-      <form>
-  
-        <div class="form-grid">
-  
-          <div class="form-group">
-            <label for="ruc">RUC</label>
-            <input
-              id="ruc"
-              type="text"
-              name="ruc"
-              [(ngModel)]="newSupplier.ruc"
-              placeholder="Ingrese el RUC">
-          </div>
-  
-          <div class="form-group">
-            <label for="legalName">Razon Social</label>
-            <input
-              id="legalName"
-              type="text"
-              name="legalName"
-              [(ngModel)]="newSupplier.legalName"
-              placeholder="Ingrese la razon social">
-          </div>
-  
-          <div class="form-group">
-            <label for="address">Direccion</label>
-            <input
-              id="address"
-              type="text"
-              name="address"
-              [(ngModel)]="newSupplier.address"
-              placeholder="Ingrese la dirección">
-          </div>
-  
-          <div class="form-group">
-            <label for="phone">Teléfono</label>
-            <input
-              id="phone"
-              type="text"
-              name="phone"
-              [(ngModel)]="newSupplier.phone"
-              placeholder="Ingrese el teléfono">
-          </div>
+    <form>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="ruc">RUC</label>
+          <input
+            id="ruc"
+            type="text"
+            name="ruc"
+            [(ngModel)]="newSupplier.ruc"
+            placeholder="Ingrese el RUC"
+            inputmode="numeric"
+            maxlength="9"
+            (keydown)="onlyNumbers($event)"
+          />
         </div>
-  
-        <div class="form-actions">
-          <button
-            type="button"
-            class="btn-primary"
-            (click)="createSupplier()">
-            Guardar
-          </button>
+
+        <div class="form-group">
+          <label for="legalName">Razon Social</label>
+          <input
+            id="legalName"
+            type="text"
+            name="legalName"
+            [(ngModel)]="newSupplier.legalName"
+            placeholder="Ingrese la razon social"
+          />
         </div>
-  
-      </form>
-  
-    </div>
-  
-  
-    <!-- TABLA -->
-    <div class="card">
-  
-      <h2>Lista de Proveedores</h2>
-  
-      <div class="table-container">
-  
-        <table>
-  
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>RUC</th>
-              <th>Razon Social</th>
-              <th>Dirección</th>
-              <th>Telefono</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-  
-          <tbody>
-            @for (supplier of suppliers; track supplier.supplierId) {
-              <tr>
-                <td>{{ supplier.supplierId }}</td>
-                <td>{{ supplier.ruc }}</td>
-                <td>{{ supplier.legalName }}</td>
-                <td>{{ supplier.address }}</td>
-                <td>{{ supplier.phone }}</td>
-                <td>{{ supplier.supplierStatus }}</td>
-              </tr>
-            }
-  
-          </tbody>
-  
-        </table>
-  
+
+        <div class="form-group">
+          <label for="address">Direccion</label>
+          <input
+            id="address"
+            type="text"
+            name="address"
+            [(ngModel)]="newSupplier.address"
+            placeholder="Ingrese la dirección"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Teléfono</label>
+          <input
+            id="phone"
+            type="text"
+            name="phone"
+            [(ngModel)]="newSupplier.phone"
+            placeholder="Ingrese el teléfono"
+            inputmode="numeric"
+            maxlength="9"
+            (keydown)="onlyNumbers($event)"
+          />
+        </div>
+        @if (editingSupplier) {
+          <div class="form-group full-width">
+            <label for="supplierStatus">Estado</label>
+            <select
+              id="supplierStatus"
+              name="supplierStatus"
+              [(ngModel)]="newSupplier.supplierStatus"
+            >
+              <option [value]="0">Activo</option>
+              <option [value]="1">Inactivo</option>
+            </select>
+          </div>
+        }
       </div>
-  
-    </div>
-  
+
+      <div class="form-actions">
+        @if (!editingSupplier) {
+          <button type="button" class="btn-primary" (click)="createSupplier()">Guardar</button>
+        } @else {
+          <button type="button" class="btn-primary" (click)="updateSupplier()">Actualizar</button>
+
+          <button type="button" class="btn-secondary" (click)="cancelEdit()">Cancelar</button>
+        }
+      </div>
+    </form>
   </div>
+
+  <!-- TABLA -->
+  <div class="card">
+    <h2>Lista de Proveedores</h2>
+
+    <div class="filter-container">
+      <label for="statusFilter"> Estado: </label>
+
+      <select id="statusFilter" [(ngModel)]="filterStatus">
+        <option value="TODOS">Todos</option>
+
+        <option value="ACTIVOS">Activos</option>
+
+        <option value="INACTIVOS">Inactivos</option>
+      </select>
+    </div>
+    <br />
+
+    <div class="table-container">
+      <table class="border-separate border border-gray-400">
+        <thead>
+          <tr class="text-left md:text-center">
+            <th class="border border-gray-300">ID</th>
+            <th class="border border-gray-300">RUC</th>
+            <th class="border border-gray-300">Razon Social</th>
+            <th class="border border-gray-300">Dirección</th>
+            <th class="border border-gray-300">Telefono</th>
+            <th class="border border-gray-300">Estado</th>
+            <th class="border border-gray-300">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (supplier of filteredSupplier; track supplier.supplierId) {
+            <tr>
+              <td class="border border-gray-300">{{ supplier.supplierId }}</td>
+              <td class="border border-gray-300">{{ supplier.ruc }}</td>
+              <td class="border border-gray-300">{{ supplier.legalName }}</td>
+              <td class="border border-gray-300">{{ supplier.address }}</td>
+              <td class="border border-gray-300">{{ supplier.phone }}</td>
+              <td class="border border-gray-300">
+                @if (supplier.supplierStatus === 0) {
+                  <span class="status active" title="Activo">
+                    <i class="fa-solid fa-circle"></i>
+                  </span>
+                } @else {
+                  <span class="status inactive" title="Inactivo">
+                    <i class="fa-solid fa-circle"></i>
+                  </span>
+                }
+              </td>
+
+              <td class="actions border border-gray-300">
+                <button
+                  type="button"
+                  class="btn-icon"
+                  title="Editar"
+                  (click)="editSupplier(supplier)"
+                >
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+
+                @if (supplier.supplierStatus === 0) {
+                  <button
+                    type="button"
+                    class="btn-icon"
+                    title="Desactivar"
+                    (click)="updateSupplierStatus(supplier.supplierId, 1)"
+                  >
+                    <i class="fa-solid fa-ban"></i>
+                  </button>
+                }
+
+                @if (supplier.supplierStatus === 1) {
+                  <button
+                    type="button"
+                    class="btn-icon"
+                    title="Activar"
+                    (click)="updateSupplierStatus(supplier.supplierId, 0)"
+                  >
+                    <i class="fa-solid fa-check"></i>
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
