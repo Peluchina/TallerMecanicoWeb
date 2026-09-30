@@ -1,154 +1,216 @@
 <div class="container">
+  <!-- FORMULARIO -->
+  <div class="card">
+    <h2>
+      {{ editingEmployee ? 'Editar Empleado' : 'Registrar Empleado' }}
+    </h2>
 
-    <!-- FORMULARIO -->
-    <div class="card">
-  
-      <h2>Registrar Empleado</h2>
-  
-      <form>
-  
-        <div class="form-grid">
-  
-          <div class="form-group">
-            <label for="firstName">Nombre</label>
-            <input
-              id="firstName"
-              type="text"
-              name="firstName"
-              [(ngModel)]="newEmployee.firstName"
-              placeholder="Ingrese el nombre">
-          </div>
-  
-          <div class="form-group">
-            <label for="lastName">Apellido</label>
-            <input
-              id="lastName"
-              type="text"
-              name="lastName"
-              [(ngModel)]="newEmployee.lastName"
-              placeholder="Ingrese el apellido">
-          </div>
-  
-          <div class="form-group">
-            <label for="dni">DNI</label>
-            <input
-              id="dni"
-              type="text"
-              name="dni"
-              [(ngModel)]="newEmployee.dni"
-              placeholder="Ingrese el DNI">
-          </div>
-  
-          <div class="form-group">
-            <label for="phone">Teléfono</label>
-            <input
-              id="phone"
-              type="text"
-              name="phone"
-              [(ngModel)]="newEmployee.phone"
-              placeholder="Ingrese el teléfono">
-          </div>
-  
-          <div class="form-group full-width">
-            <label for="address">Dirección</label>
-            <input
-              id="address"
-              type="text"
-              name="address"
-              [(ngModel)]="newEmployee.address"
-              placeholder="Ingrese la dirección">
-          </div>
-          <div class="form-group full-width">
-            <label for="role">Rol</label>
-            <input
-              id="role"
-              type="text"
-              name="role"
-              [(ngModel)]="newEmployee.role"
-              placeholder="Ingrese el rol del empleado">
-          </div>
-          <div class="form-group full-width">
-            <label for="emailAddress">Cuenta</label>
-            <input
-              id="emailAddress"
-              type="text"
-              name="emailAddress"
-              [(ngModel)]="newEmployee.emailAddress"
-              placeholder="Ingrese el correo del empleado">
-          </div>
-          <div class="form-group full-width">
-            <label for="password">Contraseña</label>
-            <input
-              id="password"
-              type="text"
-              name="password"
-              [(ngModel)]="newEmployee.password"
-              placeholder="Ingrese la contraseña del empleado">
-          </div>
+    <form>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="firstName">Nombre</label>
+          <input
+            id="firstName"
+            type="text"
+            name="firstName"
+            [(ngModel)]="newEmployee.firstName"
+            placeholder="Ingrese el nombre"
+          />
         </div>
-  
-        <div class="form-actions">
-          <button
-            type="button"
-            class="btn-primary"
-            (click)="createEmployee()">
-            Guardar
-          </button>
+
+        <div class="form-group">
+          <label for="lastName">Apellido</label>
+          <input
+            id="lastName"
+            type="text"
+            name="lastName"
+            [(ngModel)]="newEmployee.lastName"
+            placeholder="Ingrese el apellido"
+          />
         </div>
-  
-      </form>
-  
-    </div>
-  
-  
-    <!-- TABLA -->
-    <div class="card">
-  
-      <h2>Lista de Clientes</h2>
-  
-      <div class="table-container">
-  
-        <table>
-  
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Apellido</th>
-              <th>DNI</th>
-              <th>Dirección</th>
-              <th>Rol</th>
-              <th>cuenta</th>
-              <th>Contraeña</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-  
-          <tbody>
-  
-            @for (employee of employee; track employee.employeeId) {
-  
-              <tr>
-                <td>{{ employee.employeeId }}</td>
-                <td>{{ employee.firstName }}</td>
-                <td>{{ employee.lastName }}</td>
-                <td>{{ employee.dni }}</td>
-                <td>{{ employee.address }}</td>
-                <td>{{ employee.phone }}</td>
-                <td>{{ employee.role }}</td>
-                <td>{{ employee.emailAddress }}</td>
-                <td>{{ employee.password }}</td>
-                <td>{{ employee.employeeStatus }}</td>
-              </tr>
-  
-            }
-  
-          </tbody>
-  
-        </table>
-  
+
+        <div class="form-group">
+          <label for="dni">DNI</label>
+          <input
+            id="dni"
+            type="number"
+            name="dni"
+            [(ngModel)]="newEmployee.dni"
+            placeholder="Ingrese el DNI"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Teléfono</label>
+          <input
+            id="phone"
+            type="number"
+            name="phone"
+            [(ngModel)]="newEmployee.phone"
+            placeholder="Ingrese el teléfono"
+          />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="address">Dirección</label>
+          <input
+            id="address"
+            type="text"
+            name="address"
+            [(ngModel)]="newEmployee.address"
+            placeholder="Ingrese la dirección"
+          />
+        </div>
+        <div class="form-group full-width">
+          <label for="role">Rol</label>
+          <input
+            id="role"
+            type="text"
+            name="role"
+            [(ngModel)]="newEmployee.role"
+            placeholder="Ingrese el rol del empleado"
+          />
+        </div>
+        <div class="form-group full-width">
+          <label for="emailAddress">Cuenta</label>
+          <input
+            id="emailAddress"
+            type="text"
+            name="emailAddress"
+            [(ngModel)]="newEmployee.emailAddress"
+            placeholder="Ingrese el correo del empleado"
+          />
+        </div>
+        <div class="form-group full-width">
+          <label for="password">Contraseña</label>
+          <input
+            id="password"
+            type="text"
+            name="password"
+            [(ngModel)]="newEmployee.password"
+            placeholder="Ingrese la contraseña del empleado"
+          />
+        </div>
+        @if (editingEmployee) {
+          <div class="form-group full-width">
+            <label for="employeeStatus">Estado</label>
+            <select
+              id="employeeStatus"
+              name="employeeStatus"
+              [(ngModel)]="newEmployee.employeeStatus"
+            >
+              <option [value]="0">Activo</option>
+              <option [value]="1">Inactivo</option>
+            </select>
+          </div>
+        }
       </div>
-  
-    </div>
-  
+
+      <div class="form-actions">
+        @if (!editingEmployee) {
+          <button type="button" class="btn-primary" (click)="createEmployee()">Guardar</button>
+        } @else {
+          <button type="button" class="btn-primary" (click)="updateEmployee()">Actualizar</button>
+          <button type="button" class="btn-secondary" (click)="cancelEdit()">Cancelar</button>
+        }
+      </div>
+    </form>
   </div>
+
+  <!-- TABLA -->
+  <div class="card">
+    <h2>Lista de Empleados</h2>
+
+    <div class="filter-container">
+      <label for="statusFilter"> Estado: </label>
+
+      <select id="statusFilter" [(ngModel)]="filterStatus">
+        <option value="TODOS">Todos</option>
+
+        <option value="ACTIVOS">Activos</option>
+
+        <option value="INACTIVOS">Inactivos</option>
+      </select>
+    </div>
+    <br />
+
+    <div class="table-container">
+      <table class="border-separate border border-gray-400">
+        <thead>
+          <tr>
+            <th class="border border-gray-300">ID</th>
+            <th class="border border-gray-300">Nombre</th>
+            <th class="border border-gray-300">Apellido</th>
+            <th class="border border-gray-300">DNI</th>
+            <th class="border border-gray-300">Dirección</th>
+            <th class="border border-gray-300">Teléfono</th>
+            <th class="border border-gray-300">Rol</th>
+            <th class="border border-gray-300">Cuenta</th>
+            <th class="border border-gray-300">Contraseña</th>
+            <th class="border border-gray-300">Estado</th>
+            <th class="border border-gray-300">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (employee of filteredEmployees; track employee.employeeId) {
+            <tr>
+              <td class="border border-gray-300">{{ employee.employeeId }}</td>
+              <td class="border border-gray-300">{{ employee.firstName }}</td>
+              <td class="border border-gray-300">{{ employee.lastName }}</td>
+              <td class="border border-gray-300">{{ employee.dni }}</td>
+              <td class="border border-gray-300">{{ employee.address }}</td>
+              <td class="border border-gray-300">{{ employee.phone }}</td>
+              <td class="border border-gray-300">{{ employee.role }}</td>
+              <td class="border border-gray-300">{{ employee.emailAddress }}</td>
+              <td class="border border-gray-300">{{ employee.password }}</td>
+              <td class="border border-gray-300">
+                @if (employee.employeeStatus === 0) {
+                  <span class="status active" title="Activo">
+                    <i class="fa-solid fa-circle"></i>
+                  </span>
+                } @else {
+                  <span class="status inactive" title="Inactivo">
+                    <i class="fa-solid fa-circle"></i>
+                  </span>
+                }
+              </td>
+              <td class="actions" class="border border-gray-300">
+                <button
+                  type="button"
+                  class="btn-icon"
+                  title="Editar"
+                  (click)="editEmployee(employee)"
+                >
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+
+                @if (employee.employeeStatus === 0) {
+                  <button
+                    type="button"
+                    class="btn-icon"
+                    title="Desactivar"
+                    (click)="updateEmployeeStatus(employee.employeeId, 1)"
+                  >
+                    <i class="fa-solid fa-ban"></i>
+                  </button>
+                }
+
+                @if (employee.employeeStatus === 1) {
+                  <button
+                    type="button"
+                    class="btn-icon"
+                    title="Activar"
+                    (click)="updateEmployeeStatus(employee.employeeId, 0)"
+                  >
+                    <i class="fa-solid fa-check"></i>
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

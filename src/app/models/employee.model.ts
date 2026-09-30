@@ -1,3 +1,4 @@
+
 import { Person } from "./person.model";
 
 export interface Employee extends Person{
@@ -7,3 +8,5 @@ export interface Employee extends Person{
     password:string;
     employeeStatus: number;
 }
+
+export type employeeRequest=Omit<Employee,'employeeId' | 'employeeStatus'>

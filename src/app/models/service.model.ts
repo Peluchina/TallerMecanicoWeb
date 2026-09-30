@@ -8,4 +8,4 @@ export interface Service {
 }
 
 export type ServiceRequest = Omit<Service, 'serviceId' | 'serviceStatus'>;
-export type ProductRequest = ServiceRequest;
+//export type ProductRequest = ServiceRequest;

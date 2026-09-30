@@ -6,6 +6,7 @@ import { ProductScheduleComponent } from './pages/product-schedule/product-sched
 import { HomeComponent } from './pages/home/home';
 import { Products } from './pages/product/product';
 import { Services } from './pages/service/service';
+import { Employees } from './pages/employee/employee';
 
 export const routes: Routes = [
   {
@@ -16,6 +17,10 @@ export const routes: Routes = [
   {
     path: 'customer',
     component: Customers,
+  },
+  {
+    path: 'employee',
+    component: Employees,
   },
   {
     path: 'supplier',
