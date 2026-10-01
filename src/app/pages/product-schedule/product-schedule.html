@@ -1,1 +1,159 @@
-<p>product-schedule works!</p>
+<div class="container">
+
+  <!-- BOTÓN VOLVER Y HEADER -->
+  <div class="header-banner">
+    <button type="button" class="btn-secondary" (click)="goBackToServiceSchedule()">
+      <i class="fa-solid fa-arrow-left"></i> Volver a Programaciones
+    </button>
+    @if (selectedServiceScheduleId) {
+      <span class="active-context-badge">
+        <i class="fa-solid fa-circle-info"></i> {{ selectedServiceScheduleLabel }}
+      </span>
+    }
+  </div>
+
+  <!-- FORMULARIO -->
+  <div class="card">
+    <h2>Asignar Producto a Programación de Servicio</h2>
+
+    <form>
+      <div class="form-grid">
+
+        <!-- PROGRAMACIÓN DE SERVICIO -->
+        <div class="form-group full-width">
+          <label for="serviceScheduleSelect">Programación de Servicio</label>
+          <select
+            id="serviceScheduleSelect"
+            name="serviceScheduleSelect"
+            [(ngModel)]="newProductSchedule.serviceScheduleId"
+          >
+            <option [ngValue]="null" disabled>-- Selecciona una programación --</option>
+            @for (sched of serviceSchedules; track sched.serviceScheduleId) {
+              <option [value]="sched.serviceScheduleId">
+                {{ getServiceScheduleInfo(sched.serviceScheduleId) }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <!-- PRODUCTO (BÚSQUEDA) -->
+        <div class="form-group">
+          <label for="productSearch">Producto</label>
+          <input
+            id="productSearch"
+            type="text"
+            name="productSearch"
+            [(ngModel)]="productSearch"
+            (ngModelChange)="onProductSearchChanged()"
+            placeholder="Buscar por nombre de producto..."
+            autocomplete="off">
+
+          @if (showProductSuggestions) {
+            <div class="search-results">
+              @for (prod of filteredProducts; track prod.productId) {
+                <button type="button" class="search-result" (click)="selectProduct(prod)">
+                  {{ prod.productName }} — S/ {{ prod.price }} (Stock: {{ prod.stock }})
+                </button>
+              } @empty {
+                <p class="no-results">No se encontraron productos.</p>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- CANTIDAD -->
+        <div class="form-group">
+          <label for="quantity">Cantidad</label>
+          <input
+            id="quantity"
+            type="number"
+            min="1"
+            name="quantity"
+            [(ngModel)]="newProductSchedule.quantity"
+            placeholder="Ingrese la cantidad">
+        </div>
+
+        <!-- FECHA DE USO -->
+        <div class="form-group full-width">
+          <label for="productUseDate">Fecha de Uso</label>
+          <input
+            id="productUseDate"
+            type="datetime-local"
+            name="productUseDate"
+            [(ngModel)]="newProductSchedule.productUseDate">
+        </div>
+
+      </div>
+
+      @if (formError) {
+        <p class="form-error">{{ formError }}</p>
+      }
+
+      <div class="form-actions">
+        <button type="button" class="btn-primary" (click)="createProductSchedule()">
+          <i class="fa-solid fa-plus"></i> Asignar Producto
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- TABLA DE PRODUCTOS DE LA PROGRAMACIÓN -->
+  <div class="card">
+    <h2>
+      Productos Asignados
+      @if (selectedServiceScheduleId) {
+        <small>(Filtrado por Programación #{{ selectedServiceScheduleId }})</small>
+      }
+    </h2>
+
+    @if (selectedServiceScheduleId) {
+      <button type="button" class="btn-secondary" style="margin-bottom: 15px;" (click)="selectedServiceScheduleId = null">
+        Mostrar todos los productos asignados
+      </button>
+    }
+
+    <div class="table-container">
+      <table class="border-separate border border-gray-400">
+        <thead>
+          <tr>
+            <th class="border border-gray-300">ID</th>
+            <th class="border border-gray-300">Programación de Servicio</th>
+            <th class="border border-gray-300">Producto</th>
+            <th class="border border-gray-300">Cantidad</th>
+            <th class="border border-gray-300">Fecha de Uso</th>
+            <th class="border border-gray-300">Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of filteredProductSchedules; track item.productScheduleId) {
+            <tr>
+              <td class="border border-gray-300">{{ item.productScheduleId }}</td>
+              <td class="border border-gray-300">{{ getServiceScheduleInfo(item.serviceScheduleId) }}</td>
+              <td class="border border-gray-300">{{ getProductName(item.productId) }}</td>
+              <td class="border border-gray-300">{{ item.quantity }}</td>
+              <td class="border border-gray-300">{{ item.productUseDate || '-' }}</td>
+              <td class="border border-gray-300">
+                @if (item.productScheduleStatus === 0 || item.productScheduleStatus === null) {
+                  <span class="status active" title="Activo">
+                    <i class="fa-solid fa-circle"></i> Activo
+                  </span>
+                } @else {
+                  <span class="status inactive" title="Inactivo">
+                    <i class="fa-solid fa-circle"></i> Inactivo
+                  </span>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 20px;">
+                No hay productos asignados a esta programación.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

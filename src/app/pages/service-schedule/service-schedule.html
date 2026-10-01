@@ -140,6 +140,7 @@
         <option value="ACTIVOS">Activos</option>
 
         <option value="INACTIVOS">Inactivos</option>
+        <option value="ATENDIDO">Atendido</option>
       </select>
     </div>
     <br />
@@ -187,6 +188,15 @@
                 }
               </td>
               <td class="actions" class="border border-gray-300">
+                <button
+                  type="button"
+                  class="btn-icon"
+                  title="Agregar productos"
+                  (click)="goToAddProducts(serviceSchedule)"
+                >
+                  <i class="fa-solid fa-boxes-stacked"></i>
+                </button>
+
                 <button
                   type="button"
                   class="btn-icon"
