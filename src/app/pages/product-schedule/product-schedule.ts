@@ -1,11 +1,19 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import Swal from 'sweetalert2';
+
 import { ProductSchedule } from '../../models/productSchedule.model';
 import { Product } from '../../models/product.model';
 import { ServiceSchedule } from '../../models/serviceSchedule.model';
-import { ServicesSchedule } from '../../services/serviceSchedule.service';
-import { ProductService } from '../../services/product.service';
+import { Customer } from '../../models/customer.model';
+import { Service } from '../../models/service.model';
+
 import { ProductScheduleService } from '../../services/productSchedule.service';
+import { ProductService } from '../../services/product.service';
+import { ServicesSchedule } from '../../services/serviceSchedule.service';
+import { CustomerService } from '../../services/customer.service';
+import { ServiceService } from '../../services/service.service';
 
 @Component({
   selector: 'app-product-schedule',
@@ -14,116 +22,244 @@ import { ProductScheduleService } from '../../services/productSchedule.service';
   styleUrl: './product-schedule.css',
 })
 export class ProductScheduleComponent implements OnInit {
-  productSchedule:ProductSchedule[]=[];
-  product:Product[]=[];
-  serviceSchecule:ServiceSchedule[]=[];
+  productSchedules: ProductSchedule[] = [];
+  products: Product[] = [];
+  serviceSchedules: ServiceSchedule[] = [];
+  customers: Customer[] = [];
+  services: Service[] = [];
+
+  selectedServiceScheduleId: number | null = null;
 
   productSearch = '';
-  serviceScheduleSearch = '';
   showProductSuggestions = false;
-  showServiceScheculeSuggestions = false;
   formError = '';
 
-  private createEmptyProductSchedule() {
-    return {
-      productId: null as number | null,
-      serviceScheduleId: null as number | null,
-      quantity: null as number | null,
-      productScheduleStatus: null as number | null,
-    };
+  newProductSchedule = {
+    productId: null as number | null,
+    serviceScheduleId: null as number | null,
+    quantity: null as number | null,
+    productUseDate: this.getDefaultDate(),
+  };
+
+  constructor(
+    private productScheduleService: ProductScheduleService,
+    private productService: ProductService,
+    private serviceScheduleService: ServicesSchedule,
+    private customerService: CustomerService,
+    private serviceService: ServiceService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+  ) {}
+
+  ngOnInit(): void {
+    this.loadProducts();
+    this.loadServiceSchedules();
+    this.loadProductSchedules();
+    this.loadCustomers();
+    this.loadServices();
+
+    this.route.queryParams.subscribe((params) => {
+      if (params['serviceScheduleId']) {
+        const id = Number(params['serviceScheduleId']);
+        this.selectedServiceScheduleId = id;
+        this.newProductSchedule.serviceScheduleId = id;
+      }
+    });
   }
 
-  private matches(query: string, values: Array<string | number>): boolean {
-    const normalizedQuery = query.trim().toLocaleLowerCase();
-    return normalizedQuery.length > 0 && values.some((value) =>
-      String(value).toLocaleLowerCase().includes(normalizedQuery)
+  private getDefaultDate(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+
+  loadProducts(): void {
+    this.productService.getAll().subscribe({
+      next: (data) => (this.products = data),
+      error: (err) => console.error('Error al obtener productos:', err),
+    });
+  }
+
+  loadServiceSchedules(): void {
+    this.serviceScheduleService.getAll().subscribe({
+      next: (data) => (this.serviceSchedules = data),
+      error: (err) => console.error('Error al obtener programaciones de servicio:', err),
+    });
+  }
+
+  loadProductSchedules(): void {
+    this.productScheduleService.getAll().subscribe({
+      next: (data) => {
+        this.productSchedules = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error al obtener productos de programación:', err),
+    });
+  }
+
+  loadCustomers(): void {
+    this.customerService.getAll().subscribe({
+      next: (data) => (this.customers = data),
+      error: (err) => console.error('Error al obtener clientes:', err),
+    });
+  }
+
+  loadServices(): void {
+    this.serviceService.getAll().subscribe({
+      next: (data) => (this.services = data),
+      error: (err) => console.error('Error al obtener servicios:', err),
+    });
+  }
+
+  get filteredProducts(): Product[] {
+    const query = this.productSearch.trim().toLowerCase();
+    if (!query) return [];
+    return this.products.filter(
+      (p) =>
+        p.productName.toLowerCase().includes(query) ||
+        p.productId.toString().includes(query),
     );
   }
 
-  newProductSchedule=this.createEmptyProductSchedule();
-
-  constructor(
-    private serviceScheduleService :ServicesSchedule,
-    private productScheduleService:ProductScheduleService,
-    private productService: ProductService,
-    private cdr: ChangeDetectorRef,
-  ){}
-
-  editingProductSchedule: ProductSchedule | null = null;
-  filterStatus: 'TODOS' | 'ACTIVOS' | 'INACTIVOS' = 'TODOS';
-
-  ngOnInit(): void {
-      this.loadProduct();
+  get selectedServiceScheduleLabel(): string {
+    const id = this.newProductSchedule.serviceScheduleId || this.selectedServiceScheduleId;
+    if (!id) return '';
+    const sched = this.serviceSchedules.find((s) => s.serviceScheduleId === id);
+    if (!sched) return `Programación #${id}`;
+    const cust = this.customers.find((c) => c.customerId === sched.customerId);
+    const serv = this.services.find((s) => s.serviceId === sched.serviceId);
+    const custName = cust ? `${cust.firstName} ${cust.lastName}` : `Cliente #${sched.customerId}`;
+    const servName = serv ? serv.serviceName : `Servicio #${sched.serviceId}`;
+    return `Programación #${id} — ${custName} (${servName})`;
   }
 
-  get filteredProduct(): Product[] {
-      return this.product.filter((product) =>
-        this.matches(this.productSearch, [
-          product.productId,
-          product.productName  
-        ])
+  onProductSearchChanged(): void {
+    this.showProductSuggestions = this.productSearch.trim().length > 0;
+    const selected = this.products.find((p) => p.productId === this.newProductSchedule.productId);
+    const label = selected ? `${selected.productName} — S/ ${selected.price}` : '';
+    if (this.productSearch !== label) {
+      this.newProductSchedule.productId = null;
+    }
+  }
+
+  selectProduct(product: Product): void {
+    this.newProductSchedule.productId = product.productId;
+    this.productSearch = `${product.productName} — S/ ${product.price}`;
+    this.showProductSuggestions = false;
+    this.formError = '';
+  }
+
+  getProductName(productId: number): string {
+    const p = this.products.find((item) => item.productId === productId);
+    return p ? p.productName : `ID: ${productId}`;
+  }
+
+  getServiceScheduleInfo(serviceScheduleId: number): string {
+    const sched = this.serviceSchedules.find((s) => s.serviceScheduleId === serviceScheduleId);
+    if (!sched) return `ID: ${serviceScheduleId}`;
+    const cust = this.customers.find((c) => c.customerId === sched.customerId);
+    const serv = this.services.find((s) => s.serviceId === sched.serviceId);
+    const custName = cust ? `${cust.firstName} ${cust.lastName}` : `Cliente #${sched.customerId}`;
+    const servName = serv ? serv.serviceName : `Servicio #${sched.serviceId}`;
+    return `#${serviceScheduleId} - ${custName} (${servName})`;
+  }
+
+  get filteredProductSchedules(): ProductSchedule[] {
+    if (this.selectedServiceScheduleId) {
+      return this.productSchedules.filter(
+        (ps) => ps.serviceScheduleId === this.selectedServiceScheduleId,
       );
     }
-  
-    get selectedProductLabel(): string {
-      const product = this.product.find(
-        (item) => item.productId === this.newProductSchedule.productId
-      );
-      return product ? `${product.productName}` : '';
+    return this.productSchedules;
+  }
+
+  createProductSchedule(): void {
+    if (
+      !this.newProductSchedule.serviceScheduleId ||
+      !this.newProductSchedule.productId ||
+      !this.newProductSchedule.quantity ||
+      this.newProductSchedule.quantity <= 0
+    ) {
+      this.formError = 'Por favor selecciona una programación, un producto y una cantidad válida.';
+      return;
     }
-    
-    loadProduct(): void {
-      this.productService.getAll().subscribe({
-        next: (data) => this.product = data,
-        error: (error) => console.error('Error al obtener servicios:', error),
+    this.formError = '';
+
+    Swal.fire({
+      title: '¿Asignar producto a la programación?',
+      text: 'Se registrará el producto para esta programación.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, asignar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+
+      Swal.fire({
+        title: 'Asignando...',
+        text: 'Por favor espera.',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
       });
-    }
 
-    
-
-    onProductSearchChanged(): void {
-      this.showProductSuggestions = this.productSearch.trim().length > 0;
-      if (this.showProductSuggestions) {
-        this.newProductSchedule.productId = null;
-      }
-    }
-
-    selectProduct(product: Product): void {
-        this.newProductSchedule.productId = product.productId;
-        this.productSearch = '';
-        this.showProductSuggestions = false;
-        this.formError = '';
-    }
-
-    createProductSchedule():void{
+      const rawDate = this.newProductSchedule.productUseDate || this.getDefaultDate();
+      const formattedDate =
+        typeof rawDate === 'string' && rawDate.length === 16 ? `${rawDate}:00` : rawDate;
 
       const payload = {
-        productId: this.newProductSchedule.productId,
-        serviceScheduleId: this.newProductSchedule.serviceScheduleId,
-        quantity: this.newProductSchedule.quantity,
+        productId: Number(this.newProductSchedule.productId),
+        serviceScheduleId: Number(this.newProductSchedule.serviceScheduleId),
+        quantity: Number(this.newProductSchedule.quantity),
+        productUseDate: formattedDate,
       };
 
-
-      if (
-        this.newProductSchedule.serviceScheduleId === null ||
-        this.newProductSchedule.productId === null ||
-        this.newProductSchedule.quantity === null
-      ) {
-        this.formError = 'Selecciona un producto de las sugerencias.';
-        return;
-      }
-  
       this.productScheduleService.create(payload).subscribe({
-        next:(response)=>{
-          console.log('Programación creada:',response);
-          //this.loadProductSchedules();
-          this.newProductSchedule = this.createEmptyProductSchedule();
-          this.productSearch = '';
-          this.formError = '';
+        next: (response) => {
+          console.log('Producto de programación creado:', response);
+          this.loadProductSchedules();
+          this.resetForm();
+
+          Swal.fire({
+            title: '¡Asignado!',
+            text: 'El producto se asignó correctamente.',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false,
+          });
         },
-        error:(error)=>{
-          console.error('Error al crear ',error);
-        }
-      })
-    }
+        error: (err) => {
+          console.error('Error al asignar producto:', err);
+          Swal.fire({
+            title: 'Error',
+            text: 'No se pudo asignar el producto.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+          });
+        },
+      });
+    });
+  }
+
+  resetForm(): void {
+    this.productSearch = '';
+    this.showProductSuggestions = false;
+    this.formError = '';
+    this.newProductSchedule = {
+      productId: null,
+      serviceScheduleId: this.selectedServiceScheduleId || null,
+      quantity: null,
+      productUseDate: this.getDefaultDate(),
+    };
+  }
+
+  goBackToServiceSchedule(): void {
+    this.router.navigate(['/service-schedule']);
+  }
 }

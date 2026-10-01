@@ -8,6 +8,7 @@ import { Service } from '../../models/service.model';
 import { CustomerService } from '../../services/customer.service';
 import { employeeService } from '../../services/employee.service';
 import { ServiceService } from '../../services/service.service';
+import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -39,8 +40,15 @@ export class ServiceScheduleComponent implements OnInit {
     private customerService: CustomerService,
     private employeeService: employeeService,
     private serviceService: ServiceService,
+    private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}
+
+  goToAddProducts(serviceSchedule: ServiceSchedule): void {
+    this.router.navigate(['/product-schedule'], {
+      queryParams: { serviceScheduleId: serviceSchedule.serviceScheduleId },
+    });
+  }
 
   ngOnInit(): void {
     this.loadServiceSchedules();
