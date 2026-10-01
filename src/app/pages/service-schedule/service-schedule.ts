@@ -33,7 +33,7 @@ export class ServiceScheduleComponent implements OnInit {
 
   newServiceSchedule = this.createEmptyServiceSchedule();
   editingServiceSchedule: ServiceSchedule | null = null;
-  filterStatus: 'TODOS' | 'ACTIVOS' |'ATENDIDO'| 'INACTIVOS' = 'TODOS';
+  filterStatus: 'TODOS' | 'ACTIVO' | 'REALIZADO' | 'INACTIVOS' = 'TODOS';
 
   constructor(
     private serviceScheduleService: ServicesSchedule,
@@ -109,7 +109,7 @@ export class ServiceScheduleComponent implements OnInit {
   loadServiceSchedules(): void {
     this.serviceScheduleService.getAll().subscribe({
       next: (data) => {
-        this.serviceSchedules = data;
+        this.serviceSchedules = data || [];
         this.cdr.detectChanges();
       },
       error: (error) => {
@@ -120,21 +120,30 @@ export class ServiceScheduleComponent implements OnInit {
 
   loadCustomers(): void {
     this.customerService.getAll().subscribe({
-      next: (data) => (this.customers = data),
+      next: (data) => {
+        this.customers = data || [];
+        this.cdr.detectChanges();
+      },
       error: (error) => console.error('Error al obtener clientes:', error),
     });
   }
 
   loadEmployees(): void {
     this.employeeService.getAll().subscribe({
-      next: (data) => (this.employees = data),
+      next: (data) => {
+        this.employees = data || [];
+        this.cdr.detectChanges();
+      },
       error: (error) => console.error('Error al obtener empleados:', error),
     });
   }
 
   loadServices(): void {
     this.serviceService.getAll().subscribe({
-      next: (data) => (this.services = data),
+      next: (data) => {
+        this.services = data || [];
+        this.cdr.detectChanges();
+      },
       error: (error) => console.error('Error al obtener servicios:', error),
     });
   }
@@ -365,26 +374,50 @@ export class ServiceScheduleComponent implements OnInit {
       const formattedDate =
         typeof rawDate === 'string' && rawDate.length === 16 ? `${rawDate}:00` : rawDate;
 
+      const newStatus = Number(this.newServiceSchedule.serviceScheduleStatus ?? 0);
+      const oldStatus = this.editingServiceSchedule!.serviceScheduleStatus;
+
       const payload = {
         customerId: Number(this.newServiceSchedule.customerId),
         employeeId: Number(this.newServiceSchedule.employeeId),
         serviceId: Number(this.newServiceSchedule.serviceId),
         scheduledDate: formattedDate,
-        serviceScheduleStatus: Number(this.newServiceSchedule.serviceScheduleStatus ?? 0),
       };
 
       this.serviceScheduleService.update(serviceScheduleId, payload).subscribe({
         next: () => {
-          this.loadServiceSchedules();
-          this.resetForm();
+          if (newStatus !== oldStatus) {
+            this.serviceScheduleService.updateStatus(serviceScheduleId, newStatus).subscribe({
+              next: () => {
+                this.loadServiceSchedules();
+                this.resetForm();
 
-          Swal.fire({
-            title: '¡Actualizado!',
-            text: 'La programación se actualizó correctamente.',
-            icon: 'success',
-            timer: 2000,
-            showConfirmButton: false,
-          });
+                Swal.fire({
+                  title: '¡Actualizado!',
+                  text: 'La programación se actualizó correctamente.',
+                  icon: 'success',
+                  timer: 2000,
+                  showConfirmButton: false,
+                });
+              },
+              error: (error) => {
+                console.error('Error al actualizar el estado de la programación:', error);
+                this.loadServiceSchedules();
+                this.resetForm();
+              }
+            });
+          } else {
+            this.loadServiceSchedules();
+            this.resetForm();
+
+            Swal.fire({
+              title: '¡Actualizado!',
+              text: 'La programación se actualizó correctamente.',
+              icon: 'success',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+          }
         },
         error: (error) => {
           console.error('Error al actualizar la programación:', error);
@@ -408,8 +441,21 @@ export class ServiceScheduleComponent implements OnInit {
     return this.serviceSchedules.filter((serviceSchedule) => serviceSchedule.serviceScheduleStatus === 0);
   }
 
+  private getActionText(status: number): string {
+    switch (status) {
+      case 0:
+        return 'activar';
+      case 1:
+        return 'desactivar';
+      case 2:
+        return 'marcar como realizada';
+      default:
+        return 'actualizar';
+    }
+  }
+
   updateServiceScheduleStatus(serviceScheduleId: number, status: number): void {
-    const action = status === 1 ? 'desactivar' : 'activar';
+    const action = this.getActionText(status);
 
     Swal.fire({
       title: `¿Deseas ${action} esta programación?`,
@@ -467,16 +513,16 @@ export class ServiceScheduleComponent implements OnInit {
   }
 
   get filteredServiceSchedule(): ServiceSchedule[] {
-    if (this.filterStatus === 'ACTIVOS') {
-      return this.serviceSchedules.filter((serviceSchedule) => serviceSchedule.serviceScheduleStatus === 0);
+    if (this.filterStatus === 'ACTIVO') {
+      return this.serviceSchedules.filter((s) => s.serviceScheduleStatus === 0);
     }
 
     if (this.filterStatus === 'INACTIVOS') {
-      return this.serviceSchedules.filter((serviceSchedule) => serviceSchedule.serviceScheduleStatus === 1);
+      return this.serviceSchedules.filter((s) => s.serviceScheduleStatus === 1);
     }
 
-    if (this.filterStatus === 'ATENDIDO') {
-      return this.serviceSchedules.filter((serviceSchedule) => serviceSchedule.serviceScheduleStatus === 2);
+    if (this.filterStatus === 'REALIZADO') {
+      return this.serviceSchedules.filter((s) => s.serviceScheduleStatus === 2);
     }
 
     return this.serviceSchedules;

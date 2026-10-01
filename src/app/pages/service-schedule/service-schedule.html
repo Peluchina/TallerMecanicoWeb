@@ -107,6 +107,7 @@
             >
               <option [value]="0">Activo</option>
               <option [value]="1">Inactivo</option>
+              <option [value]="2">Realizado</option>
             </select>
           </div>
         }
@@ -136,11 +137,9 @@
 
       <select id="statusFilter" [(ngModel)]="filterStatus">
         <option value="TODOS">Todos</option>
-
-        <option value="ACTIVOS">Activos</option>
-
+        <option value="ACTIVO">Activos</option>
         <option value="INACTIVOS">Inactivos</option>
-        <option value="ATENDIDO">Atendido</option>
+        <option value="REALIZADO">Realizados</option>
       </select>
     </div>
     <br />
@@ -174,20 +173,20 @@
               <td class="border border-gray-300">
                 @if (serviceSchedule.serviceScheduleStatus === 0) {
                   <span class="status active" title="Activo">
-                    <i class="fa-solid fa-circle"></i>
+                    <i class="fa-solid fa-circle"></i> Activo
                   </span>
-                } @else if(serviceSchedule.serviceScheduleStatus === 1){
+                } @else if (serviceSchedule.serviceScheduleStatus === 1) {
                   <span class="status inactive" title="Inactivo">
-                    <i class="fa-solid fa-circle"></i>
+                    <i class="fa-solid fa-circle"></i> Inactivo
                   </span>
-                }
-                @else if (serviceSchedule.serviceScheduleStatus === 2){
+                } @else if (serviceSchedule.serviceScheduleStatus === 2) {
                   <span class="status do" title="Realizado">
-                    <i class="fa-solid fa-circle"></i>
+                    <i class="fa-solid fa-circle-check"></i> Realizado
                   </span>
                 }
               </td>
-              <td class="actions" class="border border-gray-300">
+              <td class="actions border border-gray-300">
+                <!-- Botón Agregar productos (Product Schedule) -->
                 <button
                   type="button"
                   class="btn-icon"
@@ -197,6 +196,7 @@
                   <i class="fa-solid fa-boxes-stacked"></i>
                 </button>
 
+                <!-- Botón Editar -->
                 <button
                   type="button"
                   class="btn-icon"
@@ -206,7 +206,17 @@
                   <i class="fa-solid fa-pen"></i>
                 </button>
 
+                <!-- ESTADO 0 (Activo): puede pasar a 2 (Realizado) o a 1 (Inactivo) -->
                 @if (serviceSchedule.serviceScheduleStatus === 0) {
+                  <button
+                    type="button"
+                    class="btn-icon"
+                    title="Marcar como Realizado"
+                    (click)="updateServiceScheduleStatus(serviceSchedule.serviceScheduleId, 2)"
+                  >
+                    <i class="fa-solid fa-circle-check"></i>
+                  </button>
+
                   <button
                     type="button"
                     class="btn-icon"
@@ -217,6 +227,7 @@
                   </button>
                 }
 
+                <!-- ESTADO 1 (Inactivo): solo puede pasar a 0 (Activo) -->
                 @if (serviceSchedule.serviceScheduleStatus === 1) {
                   <button
                     type="button"
@@ -228,20 +239,27 @@
                   </button>
                 }
 
+                <!-- ESTADO 2 (Realizado): solo puede pasar a 0 (Activo) -->
                 @if (serviceSchedule.serviceScheduleStatus === 2) {
                   <button
                     type="button"
                     class="btn-icon"
-                    title="Activar"
+                    title="Volver a Activo"
                     (click)="updateServiceScheduleStatus(serviceSchedule.serviceScheduleId, 0)"
                   >
-                    <i class="fa-solid fa-check"></i>
+                    <i class="fa-solid fa-rotate-left"></i>
                   </button>
                 }
-                
+
               </td>
             </tr>
 
+          } @empty {
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 20px;">
+                No hay programaciones registradas.
+              </td>
+            </tr>
           }
 
         </tbody>
