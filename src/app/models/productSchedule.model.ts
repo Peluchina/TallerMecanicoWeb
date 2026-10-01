@@ -6,3 +6,5 @@ export interface ProductSchedule{
     productUseDate:string;
     productScheduleStatus:number;
 }
+
+export type ProductScheduleRequest = Omit<ProductSchedule, 'productScheduleId' | 'productScheduleStatus'|'productUseDate'>;

@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ProductSchedule } from '../../models/productSchedule.model';
 import { Product } from '../../models/product.model';
 import { ServiceSchedule } from '../../models/serviceSchedule.model';
 import { ServicesSchedule } from '../../services/serviceSchedule.service';
 import { ProductService } from '../../services/product.service';
+import { ProductScheduleService } from '../../services/productSchedule.service';
 
 @Component({
   selector: 'app-product-schedule',
@@ -28,7 +29,7 @@ export class ProductScheduleComponent implements OnInit {
       productId: null as number | null,
       serviceScheduleId: null as number | null,
       quantity: null as number | null,
-      productScheduleStatus: '',
+      productScheduleStatus: null as number | null,
     };
   }
 
@@ -43,11 +44,16 @@ export class ProductScheduleComponent implements OnInit {
 
   constructor(
     private serviceScheduleService :ServicesSchedule,
-    private productService: ProductService
+    private productScheduleService:ProductScheduleService,
+    private productService: ProductService,
+    private cdr: ChangeDetectorRef,
   ){}
 
+  editingProductSchedule: ProductSchedule | null = null;
+  filterStatus: 'TODOS' | 'ACTIVOS' | 'INACTIVOS' = 'TODOS';
+
   ngOnInit(): void {
-      
+      this.loadProduct();
   }
 
   get filteredProduct(): Product[] {
@@ -90,6 +96,14 @@ export class ProductScheduleComponent implements OnInit {
     }
 
     createProductSchedule():void{
+
+      const payload = {
+        productId: this.newProductSchedule.productId,
+        serviceScheduleId: this.newProductSchedule.serviceScheduleId,
+        quantity: this.newProductSchedule.quantity,
+      };
+
+
       if (
         this.newProductSchedule.serviceScheduleId === null ||
         this.newProductSchedule.productId === null ||
@@ -99,7 +113,7 @@ export class ProductScheduleComponent implements OnInit {
         return;
       }
   
-      this.serviceScheduleService.create(this.newProductSchedule).subscribe({
+      this.productScheduleService.create(payload).subscribe({
         next:(response)=>{
           console.log('Programación creada:',response);
           //this.loadProductSchedules();

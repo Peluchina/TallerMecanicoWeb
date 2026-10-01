@@ -6,3 +6,5 @@ export interface ServiceSchedule{
     scheduledDate:string;
     serviceScheduleStatus:number;    
 }
+
+export type ServiceScheduleRequest = Omit<ServiceSchedule, 'serviceScheduleId' | 'serviceScheduleStatus'>;
