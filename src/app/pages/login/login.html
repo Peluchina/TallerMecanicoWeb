@@ -1,0 +1,53 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="brand-header">
+      <div class="brand-icon">
+        <i class="fa-solid fa-wrench"></i>
+      </div>
+      <h2>Sistema de Taller Mecánico</h2>
+      <p class="subtitle">Inicia sesión con tu cuenta corporativa de Google para ingresar al sistema</p>
+    </div>
+
+    @if (isLoading) {
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Verificando credenciales con Google...</p>
+      </div>
+    } @else {
+      <!-- Contenedor del Botón Oficial de Google -->
+      <div class="google-btn-wrapper">
+        <div #googleBtn class="google-btn-container"></div>
+      </div>
+
+      <div class="divider">
+        <span>O para pruebas rápidas</span>
+      </div>
+
+      <!-- Botón de Modo Prueba / Demo -->
+      <button type="button" class="btn-demo" (click)="loginDemo()">
+        <i class="fa-solid fa-user-gear"></i>
+        Ingresar con Cuenta Demo de Prueba
+      </button>
+
+      <!-- Panel Configurable de Google Client ID para Desarrolladores -->
+      <details class="config-panel">
+        <summary><i class="fa-solid fa-gear"></i> Configuración de Google Client ID</summary>
+        <div class="config-content">
+          <label for="clientId">Google Cloud Client ID:</label>
+          <input
+            id="clientId"
+            type="text"
+            [(ngModel)]="clientIdInput"
+            placeholder="xxxxxx.apps.googleusercontent.com"
+          />
+          <button type="button" class="btn-update-config" (click)="updateClientId()">
+            Guardar Client ID
+          </button>
+          <p class="config-help">
+            Para habilitar el botón oficial de Google, registra la URL <code>http://localhost:4200</code> en Google Cloud Console (OAuth 2.0 Client IDs).
+          </p>
+        </div>
+      </details>
+    }
+  </div>
+</div>
