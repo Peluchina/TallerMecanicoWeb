@@ -20,7 +20,9 @@
               type="text"
               name="firstName"
               [(ngModel)]="newCustomer.firstName"
-              placeholder="Ingrese el nombre">
+              placeholder="Ingrese el nombre"
+              (keydown)="onlyLetters($event)"
+              >
           </div>
   
           <div class="form-group">
@@ -30,27 +32,38 @@
               type="text"
               name="lastName"
               [(ngModel)]="newCustomer.lastName"
-              placeholder="Ingrese el apellido">
+              placeholder="Ingrese el apellido"
+              (keydown)="onlyLetters($event)"
+              >
           </div>
   
           <div class="form-group">
             <label for="dni">DNI</label>
             <input
               id="dni"
-              type="number"
+              type="text"
               name="dni"
               [(ngModel)]="newCustomer.dni"
-              placeholder="Ingrese el DNI">
+              placeholder="Ingrese el DNI"
+              inputmode="numeric"
+              maxlength="8"
+              (keydown)="onlyNumbers($event)"
+              >
           </div>
   
           <div class="form-group">
             <label for="phone">Teléfono</label>
             <input
               id="phone"
-              type="number"
+              type="text"
               name="phone"
               [(ngModel)]="newCustomer.phone"
-              placeholder="Ingrese el teléfono">
+              placeholder="Ingrese el teléfono"
+              inputmode="numeric"
+              maxlength="9"
+              (keydown)="onlyNumbers($event)"
+              >
+              
           </div>
   
           <div class="form-group full-width">
@@ -60,7 +73,9 @@
               type="text"
               name="address"
               [(ngModel)]="newCustomer.address"
-              placeholder="Ingrese la dirección">
+              placeholder="Ingrese la dirección"
+              (keydown)="onlyValidCharacters($event)"
+              >
           </div>
   
         </div>

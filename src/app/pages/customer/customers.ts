@@ -294,4 +294,42 @@ export class Customers implements OnInit {
 
     return this.customers;
   }
+
+  onlyNumbers(event: KeyboardEvent): void {
+    const key = event.key;
+  
+    if (
+      !/[0-9]/.test(key) &&
+      key !== 'Backspace' &&
+      key !== 'Delete' &&
+      key !== 'ArrowLeft' &&
+      key !== 'ArrowRight' &&
+      key !== 'Tab'
+    ) {
+      event.preventDefault();
+    }
+  }
+
+  onlyLetters(event: KeyboardEvent): void {
+    const key = event.key;
+  
+    if (
+      !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]$/.test(key) &&
+      key !== 'Backspace' &&
+      key !== 'Delete' &&
+      key !== 'ArrowLeft' &&
+      key !== 'ArrowRight' &&
+      key !== 'Tab'
+    ) {
+      event.preventDefault();
+    }
+  }
+
+  onlyValidCharacters(event: KeyboardEvent): void {
+    const key = event.key;
+  
+    if (['@', '?', '!','_','=','*','/','¿','¡','&'].includes(key)) {
+      event.preventDefault();
+    }
+  }
 }
