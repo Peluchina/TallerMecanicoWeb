@@ -69,9 +69,9 @@ export class Customers implements OnInit {
       const payload = {
         firstName: this.newCustomer.firstName,
         lastname: this.newCustomer.lastName,
-        dni: this.newCustomer.dni,
+        dni: this.newCustomer.dni? this.newCustomer.dni.toString() : '',
         address: this.newCustomer.address,
-        phone: this.newCustomer.phone,
+        phone: this.newCustomer.phone? this.newCustomer.phone.toString() : '',
       };
 
       console.log('Enviando cliente:', payload);
