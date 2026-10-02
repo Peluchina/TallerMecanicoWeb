@@ -1,4 +1,4 @@
-import { Component, ElementRef, AfterViewInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, AfterViewInit, ViewChild, ChangeDetectorRef, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import Swal from 'sweetalert2';
@@ -14,16 +14,12 @@ import { FormsModule } from '@angular/forms';
 export class LoginComponent implements AfterViewInit {
   @ViewChild('googleBtn', { static: false }) googleBtn!: ElementRef;
 
-  public isLoading = false;
-  public clientIdInput = '';
+  public authService = inject(AuthService);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
-  constructor(
-    public authService: AuthService,
-    private router: Router,
-    private cdr: ChangeDetectorRef
-  ) {
-    this.clientIdInput = this.authService.googleClientId;
-  }
+  public isLoading = false;
+  public clientIdInput = this.authService.googleClientId;
 
   ngAfterViewInit(): void {
     if (this.authService.isLoggedIn()) {
