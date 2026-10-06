@@ -15,6 +15,7 @@
             name="firstName"
             [(ngModel)]="newEmployee.firstName"
             placeholder="Ingrese el nombre"
+            (keydown)="onlyLetters($event)"
           />
         </div>
 
@@ -26,6 +27,7 @@
             name="lastName"
             [(ngModel)]="newEmployee.lastName"
             placeholder="Ingrese el apellido"
+            (keydown)="onlyLetters($event)"
           />
         </div>
 
@@ -33,10 +35,13 @@
           <label for="dni">DNI</label>
           <input
             id="dni"
-            type="number"
+            type="text"
             name="dni"
             [(ngModel)]="newEmployee.dni"
             placeholder="Ingrese el DNI"
+            inputmode="numeric"
+            maxlength="8"
+            (keydown)="onlyNumbers($event)"
           />
         </div>
 
@@ -44,10 +49,13 @@
           <label for="phone">Teléfono</label>
           <input
             id="phone"
-            type="number"
+            type="text"
             name="phone"
             [(ngModel)]="newEmployee.phone"
             placeholder="Ingrese el teléfono"
+            inputmode="numeric"
+            maxlength="9"
+            (keydown)="onlyNumbers($event)"
           />
         </div>
 
@@ -59,6 +67,7 @@
             name="address"
             [(ngModel)]="newEmployee.address"
             placeholder="Ingrese la dirección"
+            (keydown)="onlyValidCharacters($event)"
           />
         </div>
         <div class="form-group full-width">
@@ -69,6 +78,7 @@
             name="role"
             [(ngModel)]="newEmployee.role"
             placeholder="Ingrese el rol del empleado"
+            (keydown)="onlyLetters($event)"
           />
         </div>
         <div class="form-group full-width">

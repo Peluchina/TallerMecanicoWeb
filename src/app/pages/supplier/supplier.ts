@@ -307,4 +307,27 @@ export class SupplierComponent implements OnInit {
             event.preventDefault();
           }
         }
+
+        onlyLetters(event: KeyboardEvent): void {
+          const key = event.key;
+        
+          if (
+            !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]$/.test(key) &&
+            key !== 'Backspace' &&
+            key !== 'Delete' &&
+            key !== 'ArrowLeft' &&
+            key !== 'ArrowRight' &&
+            key !== 'Tab'
+          ) {
+            event.preventDefault();
+          }
+        }
+      
+        onlyValidCharacters(event: KeyboardEvent): void {
+          const key = event.key;
+        
+          if (['@', '?', '!','_','=','*','/','¿','¡','&'].includes(key)) {
+            event.preventDefault();
+          }
+        }
 }
