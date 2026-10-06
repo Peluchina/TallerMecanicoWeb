@@ -36,6 +36,57 @@ export class AuthService {
     return !!this.currentUser();
   }
 
+  public getUserRole(): string {
+    const user = this.currentUser();
+    if (!user) return '';
+
+    let role = user.role || (user as any).rol || '';
+
+    if (!role && user.token) {
+      role = this.getRoleFromToken(user.token);
+    }
+
+    const upper = role.toString().toUpperCase().trim();
+    if (upper.includes('RECEPCION')) {
+      return 'RECEPCIONISTA';
+    }
+    if (upper.includes('ADMIN')) {
+      return 'ADMIN';
+    }
+
+    return upper || 'ADMIN';
+  }
+
+  public hasRole(allowedRoles: string[]): boolean {
+    const currentRole = this.getUserRole();
+    return allowedRoles.map((r) => r.toUpperCase()).includes(currentRole);
+  }
+
+  public isAdmin(): boolean {
+    return this.getUserRole() === 'ADMIN';
+  }
+
+  public isRecepcionista(): boolean {
+    return this.getUserRole() === 'RECEPCIONISTA';
+  }
+
+  private getRoleFromToken(token: string): string {
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) return '';
+      const payload = JSON.parse(atob(parts[1]));
+      return (
+        payload.role ||
+        payload.roles ||
+        payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ||
+        payload['role'] ||
+        ''
+      );
+    } catch {
+      return '';
+    }
+  }
+
   public loginWithGoogleToken(idToken: string): Observable<User> {
     return this.http.post<User>(`${this.apiUrl}/google-login`, { idToken }).pipe(
       tap((user) => {
@@ -44,8 +95,28 @@ export class AuthService {
     );
   }
 
-  public loginDemo(): Observable<User> {
-    return this.loginWithGoogleToken('demo-token-google');
+  public loginDemo(requestedRole: string = 'ADMIN'): Observable<User> {
+    return new Observable<User>((observer) => {
+      this.loginWithGoogleToken('demo-token-google').subscribe({
+        next: (user) => {
+          observer.next(user);
+          observer.complete();
+        },
+        error: (err) => {
+          console.warn('Backend no disponible o devolvió error en login demo, usando sesión demo de prueba:', err);
+          const demoUser: User = {
+            email: requestedRole === 'RECEPCIONISTA' ? 'recepcion@taller.com' : 'admin@taller.com',
+            name: requestedRole === 'RECEPCIONISTA' ? 'Recepción Demo' : 'Administrador Demo',
+            role: requestedRole,
+            picture: 'https://lh3.googleusercontent.com/a/default-user',
+            token: 'demo-local-jwt-token'
+          };
+          this.setSession(demoUser);
+          observer.next(demoUser);
+          observer.complete();
+        }
+      });
+    });
   }
 
   public logout(): void {

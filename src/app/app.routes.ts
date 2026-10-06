@@ -8,6 +8,7 @@ import { Services } from './pages/service/service';
 import { Employees } from './pages/employee/employee';
 import { LoginComponent } from './pages/login/login';
 import { authGuard } from './guards/auth.guard';
+import { roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
   {
@@ -22,37 +23,44 @@ export const routes: Routes = [
   {
     path: 'customer',
     component: Customers,
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMIN', 'RECEPCIONISTA'] },
   },
   {
     path: 'employee',
     component: Employees,
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMIN'] },
   },
   {
     path: 'supplier',
     component: SupplierComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMIN'] },
   },
   {
     path: 'service-schedule',
     component: ServiceScheduleComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMIN', 'RECEPCIONISTA'] },
   },
   {
     path: 'product-schedule',
     component: ProductScheduleComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMIN', 'RECEPCIONISTA'] },
   },
   {
     path: 'product',
     component: Products,
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMIN'] },
   },
   {
     path: 'service',
     component: Services,
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMIN'] },
   },
   {
     path: '**',

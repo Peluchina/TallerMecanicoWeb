@@ -8,53 +8,63 @@
 
     <nav class="navbar">
 
-      <a routerLink="/customer">Clientes</a>
+      @if (authService.hasRole(['ADMIN', 'RECEPCIONISTA'])) {
+        <a routerLink="/customer">Clientes</a>
+      }
 
-      <a routerLink="/employee">Empleados</a>
+      @if (authService.hasRole(['ADMIN'])) {
+        <a routerLink="/employee">Empleados</a>
+      }
 
-      <a routerLink="/service">Servicios</a>
+      @if (authService.hasRole(['ADMIN'])) {
+        <a routerLink="/service">Servicios</a>
+      }
 
       <!-- Menú Programación -->
-      <div class="dropdown">
-        <button
-          type="button"
-          class="dropdown-button"
-          (click)="toggleMenu('programacion')">
-          Programación ▾
-        </button>
+      @if (authService.hasRole(['ADMIN', 'RECEPCIONISTA'])) {
+        <div class="dropdown">
+          <button
+            type="button"
+            class="dropdown-button"
+            (click)="toggleMenu('programacion')">
+            Programación ▾
+          </button>
 
-        @if (activeMenu === 'programacion') {
-          <div class="dropdown-menu">
-            <a routerLink="/service-schedule" (click)="closeMenu()">
-              Programación de servicios
-            </a>
-            <a routerLink="/product-schedule" (click)="closeMenu()">
-              Productos-programación
-            </a>
-          </div>
-        }
-      </div>
+          @if (activeMenu === 'programacion') {
+            <div class="dropdown-menu">
+              <a routerLink="/service-schedule" (click)="closeMenu()">
+                Programación de servicios
+              </a>
+              <a routerLink="/product-schedule" (click)="closeMenu()">
+                Productos-programación
+              </a>
+            </div>
+          }
+        </div>
+      }
 
-      <!-- Menú Productos -->
-      <div class="dropdown">
-        <button
-          type="button"
-          class="dropdown-button"
-          (click)="toggleMenu('productos')">
-          Productos ▾
-        </button>
+      <!-- Menú Productos (Solo ADMIN) -->
+      @if (authService.hasRole(['ADMIN'])) {
+        <div class="dropdown">
+          <button
+            type="button"
+            class="dropdown-button"
+            (click)="toggleMenu('productos')">
+            Productos ▾
+          </button>
 
-        @if (activeMenu === 'productos') {
-          <div class="dropdown-menu">
-            <a routerLink="/product" (click)="closeMenu()">
-              Productos
-            </a>
-            <a routerLink="/supplier" (click)="closeMenu()">
-              Proveedores
-            </a>
-          </div>
-        }
-      </div>
+          @if (activeMenu === 'productos') {
+            <div class="dropdown-menu">
+              <a routerLink="/product" (click)="closeMenu()">
+                Productos
+              </a>
+              <a routerLink="/supplier" (click)="closeMenu()">
+                Proveedores
+              </a>
+            </div>
+          }
+        </div>
+      }
 
     </nav>
 
@@ -70,6 +80,13 @@
       <div class="user-info">
         <span class="user-name">{{ authService.currentUser()?.name }}</span>
         <span class="user-email">{{ authService.currentUser()?.email }}</span>
+        <span
+          class="user-role-badge"
+          [class.badge-admin]="authService.isAdmin()"
+          [class.badge-recep]="authService.isRecepcionista()"
+        >
+          {{ authService.getUserRole() }}
+        </span>
       </div>
       <button type="button" class="btn-logout" (click)="logout()" title="Cerrar sesión">
         <i class="fa-solid fa-right-from-bracket"></i>
