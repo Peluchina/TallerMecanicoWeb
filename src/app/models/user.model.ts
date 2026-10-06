@@ -3,4 +3,6 @@ export interface User {
   name: string;
   picture?: string;
   token?: string;
+  role?: string;
 }
+

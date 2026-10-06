@@ -62,7 +62,7 @@ export class LoginComponent implements AfterViewInit {
         Swal.fire({
           icon: 'success',
           title: '¡Bienvenido!',
-          text: `Sesión iniciada como ${user.name}`,
+          text: `Sesión iniciada como ${user.name} (${user.role || 'ADMIN'})`,
           timer: 1800,
           showConfirmButton: false,
         });
@@ -74,24 +74,28 @@ export class LoginComponent implements AfterViewInit {
         this.cdr.detectChanges();
         console.error('Error al iniciar sesión con Google:', err);
 
+        const errorMessage = err.error?.message || 'Token de Google no válido o error de servidor.';
+        const errorDetails = err.error?.details ? `\n\nDetalle técnico: ${err.error.details}` : '';
+
         Swal.fire({
           icon: 'error',
-          title: 'Falla al Iniciar Sesión',
-          text: err.error?.message || 'Token de Google no válido o error de servidor.',
+          title: `Error ${err.status || 500} de Servidor`,
+          text: errorMessage + errorDetails,
         });
       },
     });
   }
 
-  loginDemo(): void {
+  loginDemo(role: 'ADMIN' | 'RECEPCIONISTA' = 'ADMIN'): void {
     this.isLoading = true;
-    this.authService.loginDemo().subscribe({
+    this.authService.loginDemo(role).subscribe({
       next: (user) => {
         this.isLoading = false;
+        this.cdr.detectChanges();
         Swal.fire({
           icon: 'success',
           title: '¡Modo Prueba Activado!',
-          text: `Iniciaste sesión como ${user.name}`,
+          text: `Iniciaste sesión como ${user.name} (Rol: ${user.role})`,
           timer: 1800,
           showConfirmButton: false,
         });
@@ -99,6 +103,7 @@ export class LoginComponent implements AfterViewInit {
       },
       error: (err) => {
         this.isLoading = false;
+        this.cdr.detectChanges();
         console.error('Error en login demo:', err);
       },
     });
