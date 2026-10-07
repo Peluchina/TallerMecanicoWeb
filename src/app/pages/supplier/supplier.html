@@ -40,6 +40,7 @@
             name="address"
             [(ngModel)]="newSupplier.address"
             placeholder="Ingrese la dirección"
+            (keydown)="onlyValidCharacters($event)"
           />
         </div>
 
