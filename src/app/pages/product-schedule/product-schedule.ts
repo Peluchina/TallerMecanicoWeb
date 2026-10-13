@@ -116,10 +116,17 @@ export class ProductScheduleComponent implements OnInit {
     });
   }
 
+  get availableServiceSchedules(): ServiceSchedule[] {
+    return this.serviceSchedules.filter((s) => s.serviceScheduleStatus !== 1);
+  }
+
   get filteredProducts(): Product[] {
+    const activeProducts = this.products.filter(
+      (p) => (p.productStatus === 0 || p.productStatus === undefined || p.productStatus === null) && p.stock > 0
+    );
     const query = this.productSearch.trim().toLowerCase();
-    if (!query) return [];
-    return this.products.filter(
+    if (!query) return activeProducts;
+    return activeProducts.filter(
       (p) =>
         p.productName.toLowerCase().includes(query) ||
         p.productId.toString().includes(query),
@@ -141,7 +148,7 @@ export class ProductScheduleComponent implements OnInit {
   onProductSearchChanged(): void {
     this.showProductSuggestions = this.productSearch.trim().length > 0;
     const selected = this.products.find((p) => p.productId === this.newProductSchedule.productId);
-    const label = selected ? `${selected.productName} — S/ ${selected.price}` : '';
+    const label = selected ? `${selected.productName} — S/ ${selected.price} (Stock disp: ${selected.stock})` : '';
     if (this.productSearch !== label) {
       this.newProductSchedule.productId = null;
     }
@@ -149,7 +156,7 @@ export class ProductScheduleComponent implements OnInit {
 
   selectProduct(product: Product): void {
     this.newProductSchedule.productId = product.productId;
-    this.productSearch = `${product.productName} — S/ ${product.price}`;
+    this.productSearch = `${product.productName} — S/ ${product.price} (Stock disp: ${product.stock})`;
     this.showProductSuggestions = false;
     this.formError = '';
   }
@@ -188,6 +195,13 @@ export class ProductScheduleComponent implements OnInit {
       this.formError = 'Por favor selecciona una programación, un producto y una cantidad válida.';
       return;
     }
+
+    const selectedProd = this.products.find((p) => p.productId === this.newProductSchedule.productId);
+    if (selectedProd && this.newProductSchedule.quantity > selectedProd.stock) {
+      this.formError = `La cantidad solicitada (${this.newProductSchedule.quantity}) supera el stock disponible (${selectedProd.stock}).`;
+      return;
+    }
+
     this.formError = '';
 
     Swal.fire({
@@ -224,6 +238,7 @@ export class ProductScheduleComponent implements OnInit {
         next: (response) => {
           console.log('Producto de programación creado:', response);
           this.loadProductSchedules();
+          this.loadProducts(); // Recargar stock actualizado
           this.resetForm();
 
           Swal.fire({
@@ -236,9 +251,15 @@ export class ProductScheduleComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error al asignar producto:', err);
+          const errorMessage =
+            err.error?.message ||
+            err.error?.detail ||
+            err.message ||
+            'No se pudo asignar el producto.';
+
           Swal.fire({
             title: 'Error',
-            text: 'No se pudo asignar el producto.',
+            text: errorMessage,
             icon: 'error',
             confirmButtonText: 'Aceptar',
           });

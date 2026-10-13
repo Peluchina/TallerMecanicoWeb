@@ -28,8 +28,8 @@
             [(ngModel)]="newProductSchedule.serviceScheduleId"
           >
             <option [ngValue]="null" disabled>-- Selecciona una programación --</option>
-            @for (sched of serviceSchedules; track sched.serviceScheduleId) {
-              <option [value]="sched.serviceScheduleId">
+            @for (sched of availableServiceSchedules; track sched.serviceScheduleId) {
+              <option [ngValue]="sched.serviceScheduleId">
                 {{ getServiceScheduleInfo(sched.serviceScheduleId) }}
               </option>
             }

@@ -11,7 +11,7 @@
 
       <div class="form-grid">
 
-        <div class="form-group">
+        <div class="form-group customer-group">
           <label for="customerSearch">Cliente</label>
           <input
             id="customerSearch"
@@ -19,6 +19,8 @@
             name="customerSearch"
             [(ngModel)]="customerSearch"
             (ngModelChange)="onCustomerSearchChanged()"
+            (focus)="onCustomerFocus()"
+            (click)="onCustomerFocus()"
             placeholder="Busca por nombre, apellido o DNI"
             autocomplete="off">
 
@@ -35,7 +37,7 @@
           }
         </div>
 
-        <div class="form-group">
+        <div class="form-group employee-group">
           <label for="employeeSearch">Empleado</label>
           <input
             id="employeeSearch"
@@ -43,6 +45,8 @@
             name="employeeSearch"
             [(ngModel)]="employeeSearch"
             (ngModelChange)="onEmployeeSearchChanged()"
+            (focus)="onEmployeeFocus()"
+            (click)="onEmployeeFocus()"
             placeholder="Busca por nombre, apellido o DNI"
             autocomplete="off">
 
@@ -59,7 +63,7 @@
           }
         </div>
 
-        <div class="form-group">
+        <div class="form-group service-group">
           <label for="serviceSearch">Servicio</label>
           <input
             id="serviceSearch"
@@ -67,6 +71,8 @@
             name="serviceSearch"
             [(ngModel)]="serviceSearch"
             (ngModelChange)="onServiceSearchChanged()"
+            (focus)="onServiceFocus()"
+            (click)="onServiceFocus()"
             placeholder="Busca por nombre, descripción o ID"
             autocomplete="off">
 
@@ -97,20 +103,7 @@
           <p class="form-error">{{ formError }}</p>
         }
 
-        @if (editingServiceSchedule) {
-          <div class="form-group full-width">
-            <label for="serviceScheduleStatus">Estado</label>
-            <select
-              id="serviceScheduleStatus"
-              name="serviceScheduleStatus"
-              [(ngModel)]="newServiceSchedule.serviceScheduleStatus"
-            >
-              <option [value]="0">Activo</option>
-              <option [value]="1">Inactivo</option>
-              <option [value]="2">Realizado</option>
-            </select>
-          </div>
-        }
+       
       </div>
 
       <div class="form-actions">

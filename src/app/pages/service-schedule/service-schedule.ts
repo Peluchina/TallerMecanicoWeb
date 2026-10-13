@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ServiceSchedule } from '../../models/serviceSchedule.model';
 import { ServicesSchedule } from '../../services/serviceSchedule.service';
@@ -58,8 +58,15 @@ export class ServiceScheduleComponent implements OnInit {
   }
 
   get filteredCustomers(): Customer[] {
-    return this.customers.filter((customer) =>
-      this.matches(this.customerSearch, [
+    const list = this.customers.filter(
+      (c) => c.customerStatus === 0 || c.customerStatus === undefined || c.customerStatus === null
+    );
+    const query = this.customerSearch.trim();
+    if (!query) {
+      return list;
+    }
+    return list.filter((customer) =>
+      this.matches(query, [
         customer.customerId,
         customer.firstName,
         customer.lastName,
@@ -70,8 +77,15 @@ export class ServiceScheduleComponent implements OnInit {
   }
 
   get filteredEmployees(): Employee[] {
-    return this.employees.filter((employee) =>
-      this.matches(this.employeeSearch, [
+    const list = this.employees.filter(
+      (e) => e.employeeStatus === 0 || e.employeeStatus === undefined || e.employeeStatus === null
+    );
+    const query = this.employeeSearch.trim();
+    if (!query) {
+      return list;
+    }
+    return list.filter((employee) =>
+      this.matches(query, [
         employee.employeeId,
         employee.firstName,
         employee.lastName,
@@ -82,8 +96,15 @@ export class ServiceScheduleComponent implements OnInit {
   }
 
   get filteredServices(): Service[] {
-    return this.services.filter((service) =>
-      this.matches(this.serviceSearch, [
+    const list = this.services.filter(
+      (s) => s.serviceStatus === 0 || s.serviceStatus === undefined || s.serviceStatus === null
+    );
+    const query = this.serviceSearch.trim();
+    if (!query) {
+      return list;
+    }
+    return list.filter((service) =>
+      this.matches(query, [
         service.serviceId,
         service.serviceName,
         service.description,
@@ -172,6 +193,33 @@ export class ServiceScheduleComponent implements OnInit {
     const label = selected ? selected.serviceName : '';
     if (this.serviceSearch !== label) {
       this.newServiceSchedule.serviceId = null;
+    }
+  }
+
+  onCustomerFocus(): void {
+    this.showCustomerSuggestions = true;
+  }
+
+  onEmployeeFocus(): void {
+    this.showEmployeeSuggestions = true;
+  }
+
+  onServiceFocus(): void {
+    this.showServiceSuggestions = true;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement | null;
+    if (!target) return;
+    if (!target.closest('.customer-group')) {
+      this.showCustomerSuggestions = false;
+    }
+    if (!target.closest('.employee-group')) {
+      this.showEmployeeSuggestions = false;
+    }
+    if (!target.closest('.service-group')) {
+      this.showServiceSuggestions = false;
     }
   }
 
