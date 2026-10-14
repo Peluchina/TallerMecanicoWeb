@@ -101,19 +101,7 @@
             placeholder="Ingrese la contraseña del empleado"
           />
         </div>
-        @if (editingEmployee) {
-          <div class="form-group full-width">
-            <label for="employeeStatus">Estado</label>
-            <select
-              id="employeeStatus"
-              name="employeeStatus"
-              [(ngModel)]="newEmployee.employeeStatus"
-            >
-              <option [value]="0">Activo</option>
-              <option [value]="1">Inactivo</option>
-            </select>
-          </div>
-        }
+
       </div>
 
       <div class="form-actions">
