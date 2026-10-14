@@ -134,14 +134,14 @@
             @for (customer of filteredCustomers; track customer.customerId) {
   
               <tr>
-                <td class="border border-gray-300">{{ customer.customerId }}</td>
-                <td class="border border-gray-300">{{ customer.firstName }}</td>
-                <td class="border border-gray-300">{{ customer.lastName }}</td>
-                <td class="border border-gray-300">{{ customer.dni }}</td>
-                <td class="border border-gray-300">{{ customer.address }}</td>
-                <td class="border border-gray-300">{{ customer.phone }}</td>
+                <td data-label="ID" class="border border-gray-300">{{ customer.customerId }}</td>
+                <td data-label="Nombre" class="border border-gray-300">{{ customer.firstName }}</td>
+                <td data-label="Apellido" class="border border-gray-300">{{ customer.lastName }}</td>
+                <td data-label="DNI" class="border border-gray-300">{{ customer.dni }}</td>
+                <td data-label="Dirección" class="border border-gray-300">{{ customer.address }}</td>
+                <td data-label="Teléfono" class="border border-gray-300">{{ customer.phone }}</td>
                
-                <td class="actions" class="border border-gray-300">
+                <td data-label="Acciones" class="actions border border-gray-300">
                   <button
                     type="button"
                     class="btn-icon"

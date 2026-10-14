@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ServiceSchedule } from '../../models/serviceSchedule.model';
 import { ServicesSchedule } from '../../services/serviceSchedule.service';
@@ -10,6 +10,7 @@ import { employeeService } from '../../services/employee.service';
 import { ServiceService } from '../../services/service.service';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-service-schedule',
@@ -18,6 +19,7 @@ import Swal from 'sweetalert2';
   styleUrl: './service-schedule.css',
 })
 export class ServiceScheduleComponent implements OnInit {
+  private readonly authService = inject(AuthService);
   serviceSchedules: ServiceSchedule[] = [];
   customers: Customer[] = [];
   employees: Employee[] = [];
@@ -561,18 +563,22 @@ export class ServiceScheduleComponent implements OnInit {
   }
 
   get filteredServiceSchedule(): ServiceSchedule[] {
+    const visibleSchedules = this.authService.isAdmin()
+      ? this.serviceSchedules
+      : this.serviceSchedules.filter((schedule) => schedule.serviceScheduleStatus !== 1);
+
     if (this.filterStatus === 'ACTIVO') {
-      return this.serviceSchedules.filter((s) => s.serviceScheduleStatus === 0);
+      return visibleSchedules.filter((s) => s.serviceScheduleStatus === 0);
     }
 
     if (this.filterStatus === 'INACTIVOS') {
-      return this.serviceSchedules.filter((s) => s.serviceScheduleStatus === 1);
+      return visibleSchedules.filter((s) => s.serviceScheduleStatus === 1);
     }
 
     if (this.filterStatus === 'REALIZADO') {
-      return this.serviceSchedules.filter((s) => s.serviceScheduleStatus === 2);
+      return visibleSchedules.filter((s) => s.serviceScheduleStatus === 2);
     }
 
-    return this.serviceSchedules;
+    return visibleSchedules;
   }
 }

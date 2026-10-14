@@ -158,12 +158,12 @@
           @for (serviceSchedule of filteredServiceSchedule; track serviceSchedule.serviceScheduleId) {
 
             <tr>
-              <td class="border border-gray-300">{{ serviceSchedule.serviceScheduleId }}</td>
-              <td class="border border-gray-300">{{ getCustomerName(serviceSchedule.customerId) }}</td>
-              <td class="border border-gray-300">{{ getEmployeeName(serviceSchedule.employeeId) }}</td>
-              <td class="border border-gray-300">{{ getServiceName(serviceSchedule.serviceId) }}</td>
-              <td class="border border-gray-300">{{ serviceSchedule.scheduledDate }}</td>
-              <td class="border border-gray-300">
+              <td data-label="ID" class="border border-gray-300">{{ serviceSchedule.serviceScheduleId }}</td>
+              <td data-label="Cliente" class="border border-gray-300">{{ getCustomerName(serviceSchedule.customerId) }}</td>
+              <td data-label="Empleado" class="border border-gray-300">{{ getEmployeeName(serviceSchedule.employeeId) }}</td>
+              <td data-label="Servicio" class="border border-gray-300">{{ getServiceName(serviceSchedule.serviceId) }}</td>
+              <td data-label="Fecha" class="border border-gray-300">{{ serviceSchedule.scheduledDate }}</td>
+              <td data-label="Estado" class="border border-gray-300">
                 @if (serviceSchedule.serviceScheduleStatus === 0) {
                   <span class="status active" title="Activo">
                     <i class="fa-solid fa-circle"></i> Activo
@@ -178,7 +178,7 @@
                   </span>
                 }
               </td>
-              <td class="actions border border-gray-300">
+              <td data-label="Acciones" class="actions border border-gray-300">
                 <!-- Botón Agregar productos (Product Schedule) -->
                 <button
                   type="button"

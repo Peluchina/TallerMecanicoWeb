@@ -1,8 +1,9 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SupplierService } from '../../services/supplier.service';
 import { Supplier } from '../../models/supplier.model';
 import Swal from 'sweetalert2';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-supplier',
@@ -11,6 +12,7 @@ import Swal from 'sweetalert2';
   styleUrl: './supplier.css',
 })
 export class SupplierComponent implements OnInit {
+  private readonly authService = inject(AuthService);
   suppliers: Supplier[] = [];
 
   editingSupplier: Supplier | null = null;
@@ -37,6 +39,7 @@ export class SupplierComponent implements OnInit {
     this.supplierService.getAll().subscribe({
       next: (data) => {
         this.suppliers = data;
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Error al obtener proveedores:', error);
@@ -282,15 +285,19 @@ export class SupplierComponent implements OnInit {
         }
       
         get filteredSupplier(): Supplier[] {
+          const visibleSuppliers = this.authService.isAdmin()
+            ? this.suppliers
+            : this.suppliers.filter((supplier) => supplier.supplierStatus !== 1);
+
           if (this.filterStatus === 'ACTIVOS') {
-            return this.suppliers.filter((supplier) => supplier.supplierStatus === 0);
+            return visibleSuppliers.filter((supplier) => supplier.supplierStatus === 0);
           }
       
           if (this.filterStatus === 'INACTIVOS') {
-            return this.suppliers.filter((supplier) => supplier.supplierStatus === 1);
+            return visibleSuppliers.filter((supplier) => supplier.supplierStatus === 1);
           }
       
-          return this.suppliers;
+          return visibleSuppliers;
         }
 
         onlyNumbers(event: KeyboardEvent): void {

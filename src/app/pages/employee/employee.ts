@@ -1,6 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { Employee } from '../../models/employee.model';
 import { employeeService } from '../../services/employee.service';
+import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 
@@ -11,6 +12,7 @@ import Swal from 'sweetalert2';
   styleUrl: './employee.css',
 })
 export class Employees implements OnInit {
+  private readonly authService = inject(AuthService);
   employee: Employee[] = [];
 
   editingEmployee: Employee | null = null;
@@ -41,6 +43,7 @@ export class Employees implements OnInit {
     this.employeService.getAll().subscribe({
       next: (data) => {
         this.employee = data;
+        this.cdr.markForCheck();
         console.log(data);
       },
       error(error) {
@@ -306,15 +309,19 @@ export class Employees implements OnInit {
   }
 
   get filteredEmployees(): Employee[] {
+    const visibleEmployees = this.authService.isAdmin()
+      ? this.employee
+      : this.employee.filter((employee) => employee.employeeStatus !== 1);
+
     if (this.filterStatus === 'ACTIVOS') {
-      return this.employee.filter((employee) => employee.employeeStatus === 0);
+      return visibleEmployees.filter((employee) => employee.employeeStatus === 0);
     }
 
     if (this.filterStatus === 'INACTIVOS') {
-      return this.employee.filter((employee) => employee.employeeStatus === 1);
+      return visibleEmployees.filter((employee) => employee.employeeStatus === 1);
     }
 
-    return this.employee;
+    return visibleEmployees;
   }
 
   onlyNumbers(event: KeyboardEvent): void {

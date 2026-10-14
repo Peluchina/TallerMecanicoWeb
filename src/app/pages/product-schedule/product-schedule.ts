@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
@@ -14,6 +14,7 @@ import { ProductService } from '../../services/product.service';
 import { ServicesSchedule } from '../../services/serviceSchedule.service';
 import { CustomerService } from '../../services/customer.service';
 import { ServiceService } from '../../services/service.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-product-schedule',
@@ -22,6 +23,7 @@ import { ServiceService } from '../../services/service.service';
   styleUrl: './product-schedule.css',
 })
 export class ProductScheduleComponent implements OnInit {
+  private readonly authService = inject(AuthService);
   productSchedules: ProductSchedule[] = [];
   products: Product[] = [];
   serviceSchedules: ServiceSchedule[] = [];
@@ -64,6 +66,7 @@ export class ProductScheduleComponent implements OnInit {
         const id = Number(params['serviceScheduleId']);
         this.selectedServiceScheduleId = id;
         this.newProductSchedule.serviceScheduleId = id;
+        this.cdr.markForCheck();
       }
     });
   }
@@ -80,14 +83,20 @@ export class ProductScheduleComponent implements OnInit {
 
   loadProducts(): void {
     this.productService.getAll().subscribe({
-      next: (data) => (this.products = data),
+      next: (data) => {
+        this.products = data;
+        this.cdr.markForCheck();
+      },
       error: (err) => console.error('Error al obtener productos:', err),
     });
   }
 
   loadServiceSchedules(): void {
     this.serviceScheduleService.getAll().subscribe({
-      next: (data) => (this.serviceSchedules = data),
+      next: (data) => {
+        this.serviceSchedules = data;
+        this.cdr.markForCheck();
+      },
       error: (err) => console.error('Error al obtener programaciones de servicio:', err),
     });
   }
@@ -104,14 +113,20 @@ export class ProductScheduleComponent implements OnInit {
 
   loadCustomers(): void {
     this.customerService.getAll().subscribe({
-      next: (data) => (this.customers = data),
+      next: (data) => {
+        this.customers = data;
+        this.cdr.markForCheck();
+      },
       error: (err) => console.error('Error al obtener clientes:', err),
     });
   }
 
   loadServices(): void {
     this.serviceService.getAll().subscribe({
-      next: (data) => (this.services = data),
+      next: (data) => {
+        this.services = data;
+        this.cdr.markForCheck();
+      },
       error: (err) => console.error('Error al obtener servicios:', err),
     });
   }
@@ -177,12 +192,16 @@ export class ProductScheduleComponent implements OnInit {
   }
 
   get filteredProductSchedules(): ProductSchedule[] {
+    const visibleSchedules = this.authService.isAdmin()
+      ? this.productSchedules
+      : this.productSchedules.filter((schedule) => schedule.productScheduleStatus !== 1);
+
     if (this.selectedServiceScheduleId) {
-      return this.productSchedules.filter(
+      return visibleSchedules.filter(
         (ps) => ps.serviceScheduleId === this.selectedServiceScheduleId,
       );
     }
-    return this.productSchedules;
+    return visibleSchedules;
   }
 
   createProductSchedule(): void {

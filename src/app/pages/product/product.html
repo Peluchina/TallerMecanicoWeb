@@ -199,19 +199,19 @@
 
             <tr>
 
-              <td class="border border-gray-300">{{ product.productId }}</td>
+              <td data-label="ID" class="border border-gray-300">{{ product.productId }}</td>
 
-              <td class="border border-gray-300">{{ product.productName }}</td>
+              <td data-label="Producto" class="border border-gray-300">{{ product.productName }}</td>
 
-              <td class="border border-gray-300" >{{getSupplierName( product.supplierId)}}</td>
+              <td data-label="Proveedor" class="border border-gray-300">{{getSupplierName( product.supplierId)}}</td>
 
-              <td class="border border-gray-300" >{{ product.brand }}</td>
+              <td data-label="Marca" class="border border-gray-300">{{ product.brand }}</td>
 
-              <td class="border border-gray-300" >{{ product.price }}</td>
+              <td data-label="Precio" class="border border-gray-300">{{ product.price }}</td>
 
-              <td class="border border-gray-300" >{{ product.stock }}</td>
+              <td data-label="Stock" class="border border-gray-300">{{ product.stock }}</td>
 
-              <td class="border border-gray-300" >
+              <td data-label="Estado" class="border border-gray-300">
 
                 @if (product.productStatus === 0) {
         
@@ -233,7 +233,7 @@
         
               </td>
 
-              <td class="actions" class="border border-gray-300">
+              <td data-label="Acciones" class="actions border border-gray-300">
 
                 <button
                   type="button"

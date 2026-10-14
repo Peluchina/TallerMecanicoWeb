@@ -153,16 +153,16 @@
         <tbody>
           @for (employee of filteredEmployees; track employee.employeeId) {
             <tr>
-              <td class="border border-gray-300">{{ employee.employeeId }}</td>
-              <td class="border border-gray-300">{{ employee.firstName }}</td>
-              <td class="border border-gray-300">{{ employee.lastName }}</td>
-              <td class="border border-gray-300">{{ employee.dni }}</td>
-              <td class="border border-gray-300">{{ employee.address }}</td>
-              <td class="border border-gray-300">{{ employee.phone }}</td>
-              <td class="border border-gray-300">{{ employee.role }}</td>
-              <td class="border border-gray-300">{{ employee.emailAddress }}</td>
-              <td class="border border-gray-300">{{ employee.password }}</td>
-              <td class="border border-gray-300">
+              <td data-label="ID" class="border border-gray-300">{{ employee.employeeId }}</td>
+              <td data-label="Nombre" class="border border-gray-300">{{ employee.firstName }}</td>
+              <td data-label="Apellido" class="border border-gray-300">{{ employee.lastName }}</td>
+              <td data-label="DNI" class="border border-gray-300">{{ employee.dni }}</td>
+              <td data-label="Dirección" class="border border-gray-300">{{ employee.address }}</td>
+              <td data-label="Teléfono" class="border border-gray-300">{{ employee.phone }}</td>
+              <td data-label="Rol" class="border border-gray-300">{{ employee.role }}</td>
+              <td data-label="Cuenta" class="border border-gray-300">{{ employee.emailAddress }}</td>
+              <td data-label="Contraseña" class="border border-gray-300">{{ employee.password }}</td>
+              <td data-label="Estado" class="border border-gray-300">
                 @if (employee.employeeStatus === 0) {
                   <span class="status active" title="Activo">
                     <i class="fa-solid fa-circle"></i>
@@ -173,7 +173,7 @@
                   </span>
                 }
               </td>
-              <td class="actions" class="border border-gray-300">
+              <td data-label="Acciones" class="actions border border-gray-300">
                 <button
                   type="button"
                   class="btn-icon"

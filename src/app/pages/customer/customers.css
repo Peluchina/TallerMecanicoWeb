@@ -273,6 +273,59 @@
     .btn-secondary {
       width: 100%;
     }
-  
+
+    /* Tabla responsive: modo tarjeta en móvil */
+    .table-container {
+      overflow-x: unset;
+    }
+
+    table {
+      min-width: unset;
+    }
+
+    thead {
+      display: none;
+    }
+
+    tbody tr {
+      display: block;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      margin-bottom: 14px;
+      padding: 12px 14px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    tbody tr:hover {
+      background: #f9fafb;
+    }
+
+    td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 13px;
+      gap: 8px;
+    }
+
+    td:last-child {
+      border-bottom: none;
+    }
+
+    td::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: #374151;
+      font-size: 12px;
+      min-width: 90px;
+      flex-shrink: 0;
+    }
+
+    .actions {
+      justify-content: flex-end;
+    }
   }
   
