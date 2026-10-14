@@ -1,6 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CustomerService } from '../../services/customer.service';
 import { Customer } from '../../models/customer.model';
+import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { first } from 'rxjs';
@@ -12,6 +13,7 @@ import { first } from 'rxjs';
   styleUrl: './customers.css',
 })
 export class Customers implements OnInit {
+  private readonly authService = inject(AuthService);
   customers: Customer[] = [];
   editingCustomer: Customer | null = null;
   filterStatus: 'TODOS' | 'ACTIVOS' | 'INACTIVOS' = 'TODOS';
@@ -37,6 +39,7 @@ export class Customers implements OnInit {
     this.customerService.getAll().subscribe({
       next: (data) => {
         this.customers = data;
+        this.cdr.markForCheck();
         console.log(data);
       },
       error: (error) => {
@@ -284,15 +287,19 @@ export class Customers implements OnInit {
   }
 
   get filteredCustomers(): Customer[] {
+    const visibleCustomers = this.authService.isAdmin()
+      ? this.customers
+      : this.customers.filter((customer) => customer.customerStatus !== 1);
+
     if (this.filterStatus === 'ACTIVOS') {
-      return this.customers.filter((customer) => customer.customerStatus === 0);
+      return visibleCustomers.filter((customer) => customer.customerStatus === 0);
     }
 
     if (this.filterStatus === 'INACTIVOS') {
-      return this.customers.filter((customer) => customer.customerStatus === 1);
+      return visibleCustomers.filter((customer) => customer.customerStatus === 1);
     }
 
-    return this.customers;
+    return visibleCustomers;
   }
 
   onlyNumbers(event: KeyboardEvent): void {

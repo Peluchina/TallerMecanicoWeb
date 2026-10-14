@@ -1,8 +1,9 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { Service } from '../../models/service.model';
 import { ServiceService } from '../../services/service.service';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-service',
@@ -11,6 +12,7 @@ import Swal from 'sweetalert2';
   styleUrl: './service.css',
 })
 export class Services implements OnInit {
+  private readonly authService = inject(AuthService);
   service: Service[] = [];
 
   editingService: Service | null = null;
@@ -36,6 +38,7 @@ export class Services implements OnInit {
     this.serviceService.getAll().subscribe({
       next: (data) => {
         this.service = data;
+        this.cdr.markForCheck();
         console.log(data);
       },
       error: (error) => {
@@ -295,14 +298,18 @@ export class Services implements OnInit {
   }
 
   get filteredServices(): Service[] {
+    const visibleServices = this.authService.isAdmin()
+      ? this.service
+      : this.service.filter((service) => service.serviceStatus !== 1);
+
     if (this.filterStatus === 'ACTIVOS') {
-      return this.service.filter((service) => service.serviceStatus === 0);
+      return visibleServices.filter((service) => service.serviceStatus === 0);
     }
 
     if (this.filterStatus === 'INACTIVOS') {
-      return this.service.filter((service) => service.serviceStatus === 1);
+      return visibleServices.filter((service) => service.serviceStatus === 1);
     }
 
-    return this.service;
+    return visibleServices;
   }
 }

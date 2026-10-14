@@ -127,12 +127,12 @@
         <tbody>
           @for (item of filteredProductSchedules; track item.productScheduleId) {
             <tr>
-              <td class="border border-gray-300">{{ item.productScheduleId }}</td>
-              <td class="border border-gray-300">{{ getServiceScheduleInfo(item.serviceScheduleId) }}</td>
-              <td class="border border-gray-300">{{ getProductName(item.productId) }}</td>
-              <td class="border border-gray-300">{{ item.quantity }}</td>
-              <td class="border border-gray-300">{{ item.productUseDate || '-' }}</td>
-              <td class="border border-gray-300">
+              <td data-label="ID" class="border border-gray-300">{{ item.productScheduleId }}</td>
+              <td data-label="Programación de servicio" class="border border-gray-300">{{ getServiceScheduleInfo(item.serviceScheduleId) }}</td>
+              <td data-label="Producto" class="border border-gray-300">{{ getProductName(item.productId) }}</td>
+              <td data-label="Cantidad" class="border border-gray-300">{{ item.quantity }}</td>
+              <td data-label="Fecha de uso" class="border border-gray-300">{{ item.productUseDate || '-' }}</td>
+              <td data-label="Estado" class="border border-gray-300">
                 @if (item.productScheduleStatus === 0 || item.productScheduleStatus === null) {
                   <span class="status active" title="Activo">
                     <i class="fa-solid fa-circle"></i> Activo

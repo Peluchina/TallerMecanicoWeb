@@ -1,9 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
 import { Product, ProductRequest } from '../../models/product.model';
 import { SupplierService } from '../../services/supplier.service';
 import { Supplier } from '../../models/supplier.model';
+import { AuthService } from '../../services/auth.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -13,6 +14,7 @@ import Swal from 'sweetalert2';
   styleUrl: './product.css',
 })
 export class Products implements OnInit {
+  private readonly authService = inject(AuthService);
   product: Product[] = [];
   newProduct: ProductRequest = {
     productName: '',
@@ -42,6 +44,7 @@ export class Products implements OnInit {
     this.productService.getAll().subscribe({
       next: (data) => {
         this.product = data;
+        this.cdr.markForCheck();
         console.log(data);
       },
       error: (error) => {
@@ -54,6 +57,7 @@ export class Products implements OnInit {
     this.supplierService.getAll().subscribe({
       next: (data) => {
         this.suppliers = data;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -290,14 +294,18 @@ export class Products implements OnInit {
   }
 
   get filteredProducts(): Product[] {
+    const visibleProducts = this.authService.isAdmin()
+      ? this.product
+      : this.product.filter((product) => product.productStatus !== 1);
+
     if (this.filterStatus === 'ACTIVOS') {
-      return this.product.filter((product) => product.productStatus === 0);
+      return visibleProducts.filter((product) => product.productStatus === 0);
     }
 
     if (this.filterStatus === 'INACTIVOS') {
-      return this.product.filter((product) => product.productStatus === 1);
+      return visibleProducts.filter((product) => product.productStatus === 1);
     }
 
-    return this.product;
+    return visibleProducts;
   }
 }

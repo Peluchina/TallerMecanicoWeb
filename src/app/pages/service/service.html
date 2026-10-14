@@ -98,12 +98,12 @@
         <tbody>
           @for (service of filteredServices; track service.serviceId) {
             <tr>
-              <td class="border border-gray-300">{{ service.serviceId }}</td>
-              <td class="border border-gray-300">{{ service.serviceName }}</td>
-              <td class="border border-gray-300">{{ service.description }}</td>
-              <td class="border border-gray-300">{{ service.price }}</td>
-              <td class="border border-gray-300">{{ service.estimatedDuration }}</td>
-              <td class="border border-gray-300">
+              <td data-label="ID" class="border border-gray-300">{{ service.serviceId }}</td>
+              <td data-label="Nombre" class="border border-gray-300">{{ service.serviceName }}</td>
+              <td data-label="Descripción" class="border border-gray-300">{{ service.description }}</td>
+              <td data-label="Precio" class="border border-gray-300">{{ service.price }}</td>
+              <td data-label="Tiempo estimado" class="border border-gray-300">{{ service.estimatedDuration }}</td>
+              <td data-label="Estado" class="border border-gray-300">
                 @if (service.serviceStatus === 0) {
                   <span class="status active" title="Activo">
                     <i class="fa-solid fa-circle"></i>
@@ -115,7 +115,7 @@
                 }
               </td>
 
-              <td class="actions" class="border border-gray-300">
+              <td data-label="Acciones" class="actions border border-gray-300">
                 <button
                   type="button"
                   class="btn-icon"

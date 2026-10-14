@@ -1,2 +1,80 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+
+/* Las tablas conservan su formato en escritorio y se convierten en tarjetas en móvil. */
+.table-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+  .container .card .table-container {
+    overflow: visible;
+  }
+
+  .container .card .table-container > table {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .container .card .table-container thead {
+    display: none;
+  }
+
+  .container .card .table-container tbody {
+    display: block;
+  }
+
+  .container .card .table-container tbody tr {
+    display: block;
+    margin: 0 0 14px;
+    padding: 8px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 5%);
+  }
+
+  .container .card .table-container tbody td {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 9px 0;
+    border: 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 13px;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+
+  .container .card .table-container tbody td:last-child {
+    border-bottom: 0;
+  }
+
+  .container .card .table-container tbody td[data-label]::before {
+    content: attr(data-label);
+    flex: 0 0 42%;
+    color: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: left;
+    overflow-wrap: normal;
+  }
+
+  .container .card .table-container tbody td.actions {
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .container .card .table-container tbody td.actions .btn-icon {
+    flex-shrink: 0;
+  }
+}

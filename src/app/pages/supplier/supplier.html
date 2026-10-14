@@ -105,12 +105,12 @@
         <tbody>
           @for (supplier of filteredSupplier; track supplier.supplierId) {
             <tr>
-              <td class="border border-gray-300">{{ supplier.supplierId }}</td>
-              <td class="border border-gray-300">{{ supplier.ruc }}</td>
-              <td class="border border-gray-300">{{ supplier.legalName }}</td>
-              <td class="border border-gray-300">{{ supplier.address }}</td>
-              <td class="border border-gray-300">{{ supplier.phone }}</td>
-              <td class="border border-gray-300">
+              <td data-label="ID" class="border border-gray-300">{{ supplier.supplierId }}</td>
+              <td data-label="RUC" class="border border-gray-300">{{ supplier.ruc }}</td>
+              <td data-label="Razón social" class="border border-gray-300">{{ supplier.legalName }}</td>
+              <td data-label="Dirección" class="border border-gray-300">{{ supplier.address }}</td>
+              <td data-label="Teléfono" class="border border-gray-300">{{ supplier.phone }}</td>
+              <td data-label="Estado" class="border border-gray-300">
                 @if (supplier.supplierStatus === 0) {
                   <span class="status active" title="Activo">
                     <i class="fa-solid fa-circle"></i>
@@ -122,7 +122,7 @@
                 }
               </td>
 
-              <td class="actions border border-gray-300">
+              <td data-label="Acciones" class="actions border border-gray-300">
                 <button
                   type="button"
                   class="btn-icon"

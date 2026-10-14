@@ -1,4 +1,4 @@
-@if (authService.isLoggedIn()) {
+@if (isLoggedIn()) {
   <header class="header">
 
     <div class="brand">
@@ -8,20 +8,20 @@
 
     <nav class="navbar">
 
-      @if (authService.hasRole(['ADMIN', 'RECEPCIONISTA'])) {
+      @if (isAdminOrRecep()) {
         <a routerLink="/customer">Clientes</a>
       }
 
-      @if (authService.hasRole(['ADMIN'])) {
+      @if (isAdmin()) {
         <a routerLink="/employee">Empleados</a>
       }
 
-      @if (authService.hasRole(['ADMIN'])) {
+      @if (isAdmin()) {
         <a routerLink="/service">Servicios</a>
       }
 
       <!-- Menú Programación -->
-      @if (authService.hasRole(['ADMIN', 'RECEPCIONISTA'])) {
+      @if (isAdminOrRecep()) {
         <div class="dropdown">
           <button
             type="button"
@@ -32,10 +32,10 @@
 
           @if (activeMenu === 'programacion') {
             <div class="dropdown-menu">
-              <a routerLink="/service-schedule" (click)="closeMenu()">
+              <a routerLink="/service-schedule">
                 Programación de servicios
               </a>
-              <a routerLink="/product-schedule" (click)="closeMenu()">
+              <a routerLink="/product-schedule">
                 Productos-programación
               </a>
             </div>
@@ -44,7 +44,7 @@
       }
 
       <!-- Menú Productos (Solo ADMIN) -->
-      @if (authService.hasRole(['ADMIN'])) {
+      @if (isAdmin()) {
         <div class="dropdown">
           <button
             type="button"
@@ -55,10 +55,10 @@
 
           @if (activeMenu === 'productos') {
             <div class="dropdown-menu">
-              <a routerLink="/product" (click)="closeMenu()">
+              <a routerLink="/product">
                 Productos
               </a>
-              <a routerLink="/supplier" (click)="closeMenu()">
+              <a routerLink="/supplier">
                 Proveedores
               </a>
             </div>
@@ -70,22 +70,22 @@
 
     <!-- Perfil de Usuario & Cerrar Sesión -->
     <div class="user-profile">
-      @if (authService.currentUser()?.picture) {
-        <img [src]="authService.currentUser()?.picture" alt="Avatar" class="user-avatar" />
+      @if (currentUser()?.picture) {
+        <img [src]="currentUser()?.picture" alt="Avatar" class="user-avatar" />
       } @else {
         <div class="user-avatar-placeholder">
           <i class="fa-solid fa-user"></i>
         </div>
       }
       <div class="user-info">
-        <span class="user-name">{{ authService.currentUser()?.name }}</span>
-        <span class="user-email">{{ authService.currentUser()?.email }}</span>
+        <span class="user-name">{{ currentUser()?.name }}</span>
+        <span class="user-email">{{ currentUser()?.email }}</span>
         <span
           class="user-role-badge"
-          [class.badge-admin]="authService.isAdmin()"
-          [class.badge-recep]="authService.isRecepcionista()"
+          [class.badge-admin]="isAdmin()"
+          [class.badge-recep]="isRecep()"
         >
-          {{ authService.getUserRole() }}
+          {{ userRole() }}
         </span>
       </div>
       <button type="button" class="btn-logout" (click)="logout()" title="Cerrar sesión">
